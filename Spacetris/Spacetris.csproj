@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
       <HintPath>..\ExtLibs\SFML.Net\lib-x64\sfmlnet-audio-2.dll</HintPath>
     </Reference>
