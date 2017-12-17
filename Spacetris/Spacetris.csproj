@@ -24,19 +24,14 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="csfml-audio-2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="csfml-graphics-2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="csfml-system-2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="csfml-window-2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <ItemGroup>  
+    <ContentFiles Include="..\Content\**\*.*" />
+    <CSFMLFiles Include="..\ExtLibs\SFML.Net\extlibs\lib-x64\*.*" />
+  </ItemGroup>  
+
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">  
+    <Copy SourceFiles="@(ContentFiles)" DestinationFolder="$(OutDir)\Content\%(RecursiveDir)" SkipUnchangedFiles="true" />  
+    <Copy SourceFiles="@(CSFMLFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

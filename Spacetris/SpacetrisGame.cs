@@ -2,11 +2,17 @@
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using Spacetris.GameStates.Menu;
+using Spacetris.Settings;
 
 namespace Spacetris
 {
     public class SpacetrisGame : Game
     {
+        private SpacetrisGameState _gameState;
+
+        private IMenu _menu;
+
         public SpacetrisGame()
             : base(new Vector2u(960, 540), "Spacetris", Color.Black)
         {
@@ -15,37 +21,62 @@ namespace Spacetris
 
         protected override void LoadContent()
         {
-
+            GameSettings.Load();
         }
 
         protected override void Initialize()
         {
+            _gameState = SpacetrisGameState.Menu;
 
+            _menu = new Menu();
+            _menu.MenuItemSelected += MenuItemSelected;
+            _menu.Initialize(Window);
         }
 
         protected override void Update()
         {
-
+            switch (_gameState)
+            {
+                case SpacetrisGameState.Game:
+                    
+                    break;
+                case SpacetrisGameState.Menu:
+                    _menu.Update(Window, DeltaTime);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         protected override void Render()
         {
-            // Draw blue rectangle
-            RectangleShape rectangle = new RectangleShape(new Vector2f(200, 200))
+            switch (_gameState)
             {
-                FillColor = Color.Blue
-            };
-            // Set the rectangle in the center of the screen
-            rectangle.Position = new Vector2f(
-                (Window.Size.X / 2) - rectangle.Size.X / 2,
-                (Window.Size.Y / 2) - rectangle.Size.Y / 2);
-
-            Window.Draw(rectangle);
+                case SpacetrisGameState.Game:
+                    
+                    break;
+                case SpacetrisGameState.Menu:
+                    _menu.DrawBackground(Window);
+                    _menu.DrawMenu(Window);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         protected override void KeyPressed(object sender, KeyEventArgs e)
         {
+            switch (_gameState)
+            {
+                case SpacetrisGameState.Game:
 
+                    break;
+                case SpacetrisGameState.Menu:
+                    _menu.KeyPressed(Window, sender, e);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         protected override void KeyReleased(object sender, KeyEventArgs e)
@@ -80,12 +111,42 @@ namespace Spacetris
 
         protected override void Quit()
         {
+#if DEBUG
             Console.WriteLine("Quit Game :(");
+#endif
         }
 
         protected override void Resize(uint width, uint height)
         {
 
+        }
+
+        private void MenuItemSelected(object sender, MenuItemType e)
+        {
+            switch (e)
+            {
+                case MenuItemType.None:
+                    break;
+                case MenuItemType.NewGane:
+                    break;
+                case MenuItemType.Continue:
+                    break;
+                case MenuItemType.Scores:
+                    break;
+                case MenuItemType.Config:
+                    break;
+                case MenuItemType.Quit:
+                    Window.Close();
+                    break;
+                case MenuItemType.ScoresDetails:
+                    break;
+                case MenuItemType.Sound:
+                    break;
+                case MenuItemType.Music:
+                    break;
+                case MenuItemType.Back:
+                    break;
+            }
         }
     }
 }

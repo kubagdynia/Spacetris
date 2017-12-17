@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Spacetris.Settings
@@ -75,10 +76,18 @@ namespace Spacetris.Settings
 
         public static void Load()
         {
-            var settings = DataOperations.LoadData<Settings>(FileName);
+            var settings = DataOperations.LoadData<Settings>(FileName, out bool fileExists);
             if (settings != null)
             {
                 _settings = settings;
+            }
+            else if (!fileExists)
+            {
+#if DEBUG
+                Console.WriteLine("Create settings file");
+#endif
+                // If file is not exists then create file with default data
+                Save();
             }
         }
 

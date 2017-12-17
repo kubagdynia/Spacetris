@@ -43,8 +43,10 @@ namespace Spacetris.Settings
             }
         }
 
-        public static T LoadData<T>(string fileName)
+        public static T LoadData<T>(string fileName, out bool fileExists)
         {
+            fileExists = false;
+
             if (string.IsNullOrWhiteSpace(fileName))
             {
                 throw new ArgumentNullException(nameof(fileName));
@@ -52,7 +54,7 @@ namespace Spacetris.Settings
             
             string tempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
-            // Exit if Directory or File does not exist
+            // Exit if Directory does not exist
             if (!Directory.Exists(Path.GetDirectoryName(tempPath)))
             {
 #if DEBUG
@@ -61,6 +63,7 @@ namespace Spacetris.Settings
                 return default(T);
             }
 
+            // Exit if File does not exist
             if (!File.Exists(tempPath))
             {
 #if DEBUG
@@ -68,6 +71,8 @@ namespace Spacetris.Settings
 #endif
                 return default(T);
             }
+
+            fileExists = true;
 
             // Load saved Json
             byte[] jsonByte;
@@ -94,5 +99,7 @@ namespace Spacetris.Settings
             object resultValue = JsonConvert.DeserializeObject<T>(jsonData);
             return (T)Convert.ChangeType(resultValue, typeof(T));
         }
+
+        public static T LoadData<T>(string fileName) => LoadData<T>(fileName, out _);
     }
 }
