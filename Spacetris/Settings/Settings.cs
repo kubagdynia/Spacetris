@@ -14,6 +14,5 @@ namespace Spacetris.Settings
         public string BackgroundPath { get; set; } = "Content/Background/";
         public string SoundsPath { get; set; } = "Content/Sounds/";
         public string MusicPath { get; set; } = "Content/Music/";
-
     }
 }
