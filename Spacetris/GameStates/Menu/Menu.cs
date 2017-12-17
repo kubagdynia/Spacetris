@@ -342,13 +342,6 @@ namespace Spacetris.GameStates.Menu
             }
         }
 
-        private static Font LoadFont(string fontPath)
-        {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fontPath);
-            Font font = new Font(path);
-            return font;
-        }
-
         private static Func<object, object> ScoresCustomSection()
         {
             return (x) =>

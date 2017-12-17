@@ -1,14 +1,17 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using Spacetris.DataStructures;
 using Spacetris.Extensions;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Spacetris.GameStates
 {
     public abstract class BaseGameState
     {
-        public static readonly Dictionary<Keyboard.Key, string> AllowedKeyboardChars = new Dictionary<Keyboard.Key, string>
+        protected static readonly Dictionary<Keyboard.Key, string> AllowedKeyboardChars = new Dictionary<Keyboard.Key, string>
         {
             { Keyboard.Key.A, "A" },
             { Keyboard.Key.B, "B" },
@@ -83,6 +86,24 @@ namespace Spacetris.GameStates
                 target.Draw(text.Shadow(2, center));
             }
             target.Draw(text);
+        }
+
+        protected static Font LoadFont(string fontPath)
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fontPath);
+            Font font = new Font(path);
+            return font;
+        }
+
+        protected static Sprite LoadSprite(string texturePath, Point2 drawOffset)
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, texturePath);
+            Texture texture = new Texture(path);
+
+            Sprite sprite = new Sprite(texture);
+            sprite.Position = new Vector2f(drawOffset.X, drawOffset.Y);
+
+            return sprite;
         }
 
         protected virtual void LoadContent()
