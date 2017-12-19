@@ -95,7 +95,7 @@ namespace Spacetris.Settings
         {
             if (!Scores.Any())
             {
-                return false;
+                return true;
             }
 
             bool isEnoughPoints = Scores.OrderByDescending(c => c.Score).Take(5).Any(c => c.Score < score);
