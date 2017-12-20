@@ -11,6 +11,7 @@ namespace Spacetris.GameStates.Worlds
     public abstract class BaseWorld : BaseGameState, IWorld
     {
         private string _userName;
+        private bool _isKeyDownEnabled = true;
 
         private Timer _timer;
         private int _tickTimer;
@@ -603,6 +604,8 @@ namespace Spacetris.GameStates.Worlds
 
                     int removedLines = CheckLines(target);
 
+                    _isKeyDownEnabled = false;
+
                     GameState.Lines += removedLines;
                     GameState.Level = CalculateLevel(GameState.Lines);
                     GameState.Score += CalculateScore(GameState.Level, removedLines, true);
@@ -695,7 +698,7 @@ namespace Spacetris.GameStates.Worlds
                 {
                     MoveTetromino(target, 1);
                 }
-                else if (e.Code == Keyboard.Key.Down)
+                else if (e.Code == Keyboard.Key.Down && _isKeyDownEnabled)
                 {
                     MoveTetromino(target, 0, 1);
                 }
@@ -838,6 +841,11 @@ namespace Spacetris.GameStates.Worlds
             if (e.Code == Keyboard.Key.Up)
             {
                 _readyForRotate = true;
+            }
+
+            if (e.Code == Keyboard.Key.Down && !_isKeyDownEnabled)
+            {
+                _isKeyDownEnabled = true;
             }
         }
 
