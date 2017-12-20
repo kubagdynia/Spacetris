@@ -2,6 +2,7 @@
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
 using Spacetris.Settings;
+using System.IO;
 
 namespace Spacetris.GameStates.Worlds
 {
@@ -18,13 +19,13 @@ namespace Spacetris.GameStates.Worlds
 
         public override Point2 NextTetrominoPreviewPosition => new Point2(229, 20);
 
-        protected override string BackgroundTexturePath => GameSettings.BackgroundPath + "background.png";
+        protected override string BackgroundTexturePath => Path.Combine(GameSettings.BackgroundPath, "background.png");
 
-        protected override string BlocksTexturePath => GameSettings.TilesetsPath + "tilesets.png";
+        protected override string BlocksTexturePath => Path.Combine(GameSettings.TilesetsPath, "tilesets.png");
 
-        protected override string FontPath => GameSettings.FontsPath + "arial.ttf";
+        protected override string FontPath => Path.Combine(GameSettings.FontsPath, "arial.ttf");
 
-        protected override string CounterFontPath => GameSettings.FontsPath + "Tetris.ttf";
+        protected override string CounterFontPath => Path.Combine(GameSettings.FontsPath, "Tetris.ttf");
 
         public override void DrawScore(RenderWindow target, int x, int y, byte alpha = 255)
         {
@@ -65,6 +66,11 @@ namespace Spacetris.GameStates.Worlds
         private void DrawInfo(RenderWindow target, string value, int x, int y, byte alpha = 189)
         {
             DrawText(target, Font, value, x, y, new Color(242, 51, 51, alpha), 20, true, true);
+        }
+
+        protected override void LoadContent()
+        {
+            
         }
     }
 }

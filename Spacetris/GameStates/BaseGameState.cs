@@ -54,6 +54,11 @@ namespace Spacetris.GameStates
             { Keyboard.Key.Dash, "-" }
         };
 
+        public BaseGameState()
+        {
+            LoadContent();
+        }
+
         protected static void DrawText(RenderTarget target, Font font, string value, float x, float y,
             Color color, int size, bool bold = true, bool center = false, bool drawShadow = true)
         {
@@ -106,9 +111,6 @@ namespace Spacetris.GameStates
             return sprite;
         }
 
-        protected virtual void LoadContent()
-        {
-
-        }
+        protected abstract void LoadContent();
     }
 }

@@ -8,6 +8,7 @@ using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
 using Spacetris.Settings;
 using System.IO;
+using SFML.Audio;
 
 namespace Spacetris.GameStates.Menu
 {
@@ -42,6 +43,9 @@ namespace Spacetris.GameStates.Menu
         private static readonly Color ScoresColor2 = new Color(255, 216, 48, 89);
 
         private MenuItem _selectedMenuItem;
+
+        private Sound _menuSoundBeep;
+        private Sound _menuSoundSelect;
 
         private static string TitleFontPath => GameSettings.FontsPath + "Tetris.ttf";
 
@@ -273,6 +277,10 @@ namespace Spacetris.GameStates.Menu
 
                 if (nextSelectedMenuItem != null)
                 {
+                    if (GameSettings.IsSound)
+                    {
+                        _menuSoundBeep.Play();
+                    }
                     _selectedMenuItem = nextSelectedMenuItem;
                 }
             }
@@ -299,6 +307,10 @@ namespace Spacetris.GameStates.Menu
 
                 if (_selectedMenuItem != null)
                 {
+                    if (GameSettings.IsSound)
+                    {
+                        _menuSoundSelect.Play();
+                    }
                     MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
                 }
             }
@@ -311,7 +323,12 @@ namespace Spacetris.GameStates.Menu
 
         protected override void LoadContent()
         {
+            // Load sounds
+            SoundBuffer soundBuffer = new SoundBuffer(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.SoundsPath, "beep.wav"));
+            _menuSoundBeep = new Sound(soundBuffer);
 
+            soundBuffer = new SoundBuffer(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.SoundsPath, "select.wav"));
+            _menuSoundSelect = new Sound(soundBuffer);
         }
 
         private void RecalculateMenuItemsPosition(MenuItem[] items)
