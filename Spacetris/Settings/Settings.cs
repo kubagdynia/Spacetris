@@ -6,7 +6,7 @@ namespace Spacetris.Settings
     {
         public bool IsMusic { get; set; } = true;
         public bool IsSound { get; set; } = true;
-        public byte MusicVolume { get; set; } = 50;
+        public byte MusicVolume { get; set; } = 30;
         public byte SoundVolume { get; set; } = 50;
         public List<ScoreLine> Scores { get; set; } = new List<ScoreLine>();
         public string FontsPath { get; set; } = "Content/Fonts/";

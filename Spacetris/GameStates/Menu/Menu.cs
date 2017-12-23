@@ -7,7 +7,7 @@ using SFML.System;
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
 using Spacetris.Settings;
-using System.IO;
+using SFML.Audio;
 
 namespace Spacetris.GameStates.Menu
 {
@@ -36,12 +36,26 @@ namespace Spacetris.GameStates.Menu
         private const int MenuTitleSizeMax = 150;
         private int _menuTitleSizeStep = 1;
 
-        private static readonly Color MenuTitle = new Color(255, 216, 48, 189);
+        private int _menuMadeByAlphaStep = 2;
+
+        private static readonly Color MenuTitleColor = new Color(255, 216, 48, 189);
         private static readonly Color MenuItemsColor = new Color(242, 51, 51, 189);
         private static readonly Color ScoresColor = new Color(255, 55, 55, 189);
         private static readonly Color ScoresColor2 = new Color(255, 216, 48, 89);
+        private static Color MadeByColor = new Color(255, 216, 48, 0);
+
+        private readonly string[] _madeByList =
+        {
+            "Game made by kubagdynia : https://github.com/kubagdynia/Spacetris",
+            "Music \"Happy 8bit Loop 01\" by Tristan Lohengrin : http://tristanlohengrin.wixsite.com/studio"
+        };
+        private int _myByListIndex = 0;
 
         private MenuItem _selectedMenuItem;
+
+        private static Sound _menuSoundBeep;
+        private static Sound _menuSoundSelect;
+        private static Music _menuMusic;
 
         private static string TitleFontPath => GameSettings.FontsPath + "Tetris.ttf";
 
@@ -74,6 +88,23 @@ namespace Spacetris.GameStates.Menu
                 }
 
                 return _itemFont;
+            }
+        }
+
+        private static string MadeByFontPath => GameSettings.FontsPath + "arial.ttf";
+
+        private static Font _madeByFont;
+
+        private static Font MadeByFont
+        {
+            get
+            {
+                if (_madeByFont == null)
+                {
+                    _madeByFont = LoadFont(MadeByFontPath);
+                }
+
+                return _madeByFont;
             }
         }
 
@@ -112,6 +143,23 @@ namespace Spacetris.GameStates.Menu
         {
             _starfield = new Starfield(target.Size.X, target.Size.Y);
             _centerX = (int)target.Size.X / 2;
+
+            _menuMusic.Volume = GameSettings.MusicVolume;
+            _menuMusic.Loop = true;
+            if (GameSettings.IsMusic)
+            {
+                _menuMusic.Play();
+            }
+        }
+
+        protected override void LoadContent()
+        {
+            // Load sounds
+            _menuSoundBeep = LoadSound("beep.wav");
+            _menuSoundSelect = LoadSound("select.wav");
+
+            // Load Music
+            _menuMusic = LoadMusic("music.ogg");
         }
 
         public void DrawBackground(RenderWindow target)
@@ -121,8 +169,10 @@ namespace Spacetris.GameStates.Menu
 
         public void DrawMenu(RenderWindow target)
         {
+            DrawText(target, MadeByFont, _madeByList[_myByListIndex], _centerX, 155, MadeByColor, 10, true, true);
+
             // Draw menu title
-            DrawText(target, TitleFont, GameName, _centerX, 100, MenuTitle, _menuTitleSize, true, true);
+            DrawText(target, TitleFont, GameName, _centerX, 100, MenuTitleColor, _menuTitleSize, true, true);
 
             // Draw menu items
             foreach (MenuItem menuItem in GetMenuItems())
@@ -216,6 +266,27 @@ namespace Spacetris.GameStates.Menu
                     }
                 }
 
+                // Update alpha channel of "Made by"
+                if (MadeByColor.A >= 155 || MadeByColor.A == 0)
+                {
+                    _menuMadeByAlphaStep = -_menuMadeByAlphaStep;
+                }
+
+                int newAlphaValue = MadeByColor.A - _menuMadeByAlphaStep;
+                if (newAlphaValue <= 0)
+                {
+                    newAlphaValue = 0;
+
+                    // Switch "Made by" item
+                    if (++_myByListIndex + 1 > _madeByList.Length)
+                    {
+                        _myByListIndex = 0;
+                    }
+                }
+
+                MadeByColor = new Color(MadeByColor.R, MadeByColor.G, MadeByColor.B, Convert.ToByte(newAlphaValue));
+
+
                 _totalTimer = 0;
             }
 
@@ -273,6 +344,7 @@ namespace Spacetris.GameStates.Menu
 
                 if (nextSelectedMenuItem != null)
                 {
+                    PlaySound(_menuSoundBeep);
                     _selectedMenuItem = nextSelectedMenuItem;
                 }
             }
@@ -299,17 +371,13 @@ namespace Spacetris.GameStates.Menu
 
                 if (_selectedMenuItem != null)
                 {
+                    PlaySound(_menuSoundSelect);
                     MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
                 }
             }
         }
 
         public void KeyReleased(RenderWindow target, object sender, KeyEventArgs e)
-        {
-
-        }
-
-        protected override void LoadContent()
         {
 
         }
@@ -396,6 +464,7 @@ namespace Spacetris.GameStates.Menu
                         if (x != null)
                         {
                             GameSettings.IsSound = (bool)x;
+                            GameSettings.Save();
                         }
 
                         return GameSettings.IsSound;
@@ -406,6 +475,16 @@ namespace Spacetris.GameStates.Menu
                         if (x != null)
                         {
                             GameSettings.IsMusic = (bool)x;
+                            if (GameSettings.IsMusic)
+                            {
+                                _menuMusic.Play();
+                            }
+                            else
+                            {
+                                _menuMusic.Stop();
+                            }
+                            GameSettings.Save();
+
                         }
                         return GameSettings.IsMusic;
                     };

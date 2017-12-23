@@ -1,8 +1,10 @@
-﻿using SFML.Graphics;
+﻿using SFML.Audio;
+using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using Spacetris.DataStructures;
 using Spacetris.Extensions;
+using Spacetris.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,6 +55,11 @@ namespace Spacetris.GameStates
             { Keyboard.Key.Slash, "/" },
             { Keyboard.Key.Dash, "-" }
         };
+
+        public BaseGameState()
+        {
+            LoadContent();
+        }
 
         protected static void DrawText(RenderTarget target, Font font, string value, float x, float y,
             Color color, int size, bool bold = true, bool center = false, bool drawShadow = true)
@@ -106,9 +113,38 @@ namespace Spacetris.GameStates
             return sprite;
         }
 
-        protected virtual void LoadContent()
+        protected static Sound LoadSound(string fileName)
         {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return null;
+            }
 
+            SoundBuffer soundBuffer = new SoundBuffer(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.SoundsPath, fileName));
+            return new Sound(soundBuffer);
         }
+
+        protected static Music LoadMusic(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return null;
+            }
+
+            Music music = new Music(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, fileName));
+            return music;
+        }
+
+        protected static void PlaySound(Sound sound)
+        {
+            if (sound == null || !GameSettings.IsSound)
+            {
+                return;
+            }
+
+            sound.Play();
+        }
+
+        protected abstract void LoadContent();
     }
 }

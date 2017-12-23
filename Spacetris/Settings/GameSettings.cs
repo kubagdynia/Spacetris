@@ -93,7 +93,7 @@ namespace Spacetris.Settings
 
         public static bool IsEnoughPointsForTop5(int score)
         {
-            if (!Scores.Any())
+            if (Scores.Count < 5)
             {
                 return true;
             }
