@@ -70,7 +70,11 @@ namespace Spacetris.GameStates.Worlds
 
         protected override void LoadContent()
         {
-            
+            GameSoundMoveTetromino = LoadSound("move.ogg");
+            GameSoundDropTetromino = LoadSound("drop.ogg");
+            GameSoundRemoveLine = LoadSound("removeline.ogg");
+            GameSoundGameOver = LoadSound("gameover.ogg");
+            GameSoundLevelUp = LoadSound("levelup.ogg");
         }
     }
 }

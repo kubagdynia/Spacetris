@@ -1,4 +1,5 @@
-﻿using SFML.Graphics;
+﻿using SFML.Audio;
+using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using Spacetris.DataStructures;
@@ -15,6 +16,12 @@ namespace Spacetris.GameStates.Worlds
 
         private Timer _timer;
         private int _tickTimer;
+
+        public Sound GameSoundMoveTetromino;
+        public Sound GameSoundDropTetromino;
+        public Sound GameSoundRemoveLine;
+        public Sound GameSoundGameOver;
+        public Sound GameSoundLevelUp;
 
         private WorldState _worldState;
         public WorldState WorldState
@@ -520,7 +527,7 @@ namespace Spacetris.GameStates.Worlds
             return CheckWorldCollider(GameState.CurrentTetrominoBlocksPosition);
         }
 
-        public virtual void RotateTetromino()
+        public virtual bool RotateTetromino()
         {
             for (int i = 0; i < Tetrominos.TetrominoSize; i++)
             {
@@ -544,10 +551,12 @@ namespace Spacetris.GameStates.Worlds
                     GameState.CurrentTetrominoBlocksPosition[i] = GameState.PreviousTetrominoBlocksPosition[i];
                 }
                 GameState.CurrentTetrominoRotationStateNumber = oldTetrominoRotate;
-                return;
+                return false;
             }
 
             ChangeBlockSpriteTextureRect(spriteBlockNumber);
+
+            return true;
         }
 
         public virtual void MoveTetromino(RenderWindow target, int dx, int dy = 0)
@@ -604,10 +613,25 @@ namespace Spacetris.GameStates.Worlds
 
                     int removedLines = CheckLines(target);
 
+                    if (removedLines > 0)
+                    {
+                        PlaySound(GameSoundRemoveLine);
+                    }
+                    else
+                    {
+                        PlaySound(GameSoundDropTetromino);
+                    }
+
                     _isKeyDownEnabled = false;
 
                     GameState.Lines += removedLines;
-                    GameState.Level = CalculateLevel(GameState.Lines);
+
+                    int newLevel = CalculateLevel(GameState.Lines);
+                    if (newLevel != GameState.Level)
+                    {
+                        GameState.Level = newLevel;
+                        PlaySound(GameSoundLevelUp);
+                    } 
                     GameState.Score += CalculateScore(GameState.Level, removedLines, true);
 
                     CreateNewTetromino();
@@ -639,6 +663,7 @@ namespace Spacetris.GameStates.Worlds
             // If we can not create a new tetromino, finish the game and display game over
             if (!returnValue)
             {
+                PlaySound(GameSoundGameOver);
                 WorldState = WorldState.GameOver;
             }
 
@@ -678,7 +703,12 @@ namespace Spacetris.GameStates.Worlds
 
         public virtual void KeyPressed(RenderWindow target, object sender, KeyEventArgs e)
         {
-            if ((_readyForRotate && e.Code == Keyboard.Key.Up) || e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.Down)
+            if (e.Code != Keyboard.Key.Down)
+            {
+                _isKeyDownEnabled = true;
+            }
+
+            if ((_readyForRotate && e.Code == Keyboard.Key.Up) || e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.Right || (e.Code == Keyboard.Key.Down && _isKeyDownEnabled))
             {
                 if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
                 {
@@ -688,18 +718,24 @@ namespace Spacetris.GameStates.Worlds
                 if (_readyForRotate && e.Code == Keyboard.Key.Up)
                 {
                     _readyForRotate = false;
-                    RotateTetromino();
+                    if (RotateTetromino())
+                    {
+                        PlaySound(GameSoundMoveTetromino);
+                    }
                 }
                 else if (e.Code == Keyboard.Key.Left)
                 {
+                    PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, -1);
                 }
                 else if (e.Code == Keyboard.Key.Right)
                 {
+                    PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 1);
                 }
                 else if (e.Code == Keyboard.Key.Down && _isKeyDownEnabled)
                 {
+                    PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 0, 1);
                 }
             }

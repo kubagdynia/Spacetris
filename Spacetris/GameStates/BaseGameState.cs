@@ -1,8 +1,10 @@
-﻿using SFML.Graphics;
+﻿using SFML.Audio;
+using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using Spacetris.DataStructures;
 using Spacetris.Extensions;
+using Spacetris.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -109,6 +111,38 @@ namespace Spacetris.GameStates
             sprite.Position = new Vector2f(drawOffset.X, drawOffset.Y);
 
             return sprite;
+        }
+
+        protected static Sound LoadSound(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return null;
+            }
+
+            SoundBuffer soundBuffer = new SoundBuffer(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.SoundsPath, fileName));
+            return new Sound(soundBuffer);
+        }
+
+        protected static Music LoadMusic(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return null;
+            }
+
+            Music music = new Music(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, fileName));
+            return music;
+        }
+
+        protected static void PlaySound(Sound sound)
+        {
+            if (sound == null || !GameSettings.IsSound)
+            {
+                return;
+            }
+
+            sound.Play();
         }
 
         protected abstract void LoadContent();

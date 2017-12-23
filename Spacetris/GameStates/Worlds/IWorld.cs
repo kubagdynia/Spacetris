@@ -81,7 +81,7 @@ namespace Spacetris.GameStates.Worlds
 
         bool SetTetrominoBlocksPosition(int tetrominoNumber, int tetrominoRotationStateNumber, out int spriteBlockNumber);
 
-        void RotateTetromino();
+        bool RotateTetromino();
 
         void MoveTetromino(RenderWindow target, int dx, int dy = 0);
 
