@@ -1,5 +1,5 @@
 # Spacetris
-Yet another Tetris game but this time written in [.NET Core 2.0](https://github.com/dotnet/core) and [SFML](https://github.com/SFML/SFML)
+Yet another Tetris game but this time written in [.NET Core 2.0](https://github.com/dotnet/core) and [SFML](https://github.com/SFML/SFML). The project was created for fun in order to show how easily you can create a simple game in C# and SFML.
 
 Videos
 ------------
