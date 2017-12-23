@@ -252,7 +252,7 @@ namespace Spacetris.GameStates.Worlds
             }
             if (drawLandingShadow)
             {
-                DrawTetrominoLandingShadow(target, GameState.CurrentTetrominoBlocksPosition);
+                DrawTetrominoLandingShadow(target);
             }
             DrawTetromino(target, GameState.CurrentTetrominoBlocksPosition);
         }
@@ -349,30 +349,9 @@ namespace Spacetris.GameStates.Worlds
             }
         }
 
-        public virtual void DrawTetrominoLandingShadow(RenderWindow target, Point2[] tetrominoBlocksPosition)
+        public virtual void DrawTetrominoLandingShadow(RenderWindow target)
         {
-            Point2[] shadowBlocksPosition = new Point2[Tetrominos.TetrominoSize];
-
-            // Copy tetrominoBlocksPosition to shadowBlocksPosition
-            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
-            {
-                shadowBlocksPosition[i] = tetrominoBlocksPosition[i];
-            }
-
-            // Find the position of tetromino landing
-            while (CheckWorldCollider(shadowBlocksPosition))
-            {
-                for (var i = 0; i < Tetrominos.TetrominoSize; i++)
-                {
-                    shadowBlocksPosition[i].Y++;
-                }
-            }
-
-            // Put a shadow over the landing position
-            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
-            {
-                shadowBlocksPosition[i].Y--;
-            }
+            FindTetrominoLandingPosition(out Point2[] shadowBlocksPosition);
 
             // Draw shadow
             for (var i = 0; i < Tetrominos.TetrominoSize; i++)
@@ -708,7 +687,9 @@ namespace Spacetris.GameStates.Worlds
                 _isKeyDownEnabled = true;
             }
 
-            if ((_readyForRotate && e.Code == Keyboard.Key.Up) || e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.Right || (e.Code == Keyboard.Key.Down && _isKeyDownEnabled))
+            if ((_readyForRotate && e.Code == Keyboard.Key.Up) ||
+                e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.Space ||
+                (e.Code == Keyboard.Key.Down && _isKeyDownEnabled))
             {
                 if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
                 {
@@ -736,6 +717,12 @@ namespace Spacetris.GameStates.Worlds
                 else if (e.Code == Keyboard.Key.Down && _isKeyDownEnabled)
                 {
                     PlaySound(GameSoundMoveTetromino);
+                    MoveTetromino(target, 0, 1);
+                }
+                else if (e.Code == Keyboard.Key.Space)
+                {
+                    FindTetrominoLandingPosition(out Point2[] landingBlocksPosition);
+                    MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);
                     MoveTetromino(target, 0, 1);
                 }
             }
@@ -969,6 +956,30 @@ namespace Spacetris.GameStates.Worlds
             else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < tolerance)
             {
                 _readyForRotate = true;
+            }
+        }
+
+        /// <summary>
+        /// Find the position of tetromino landing
+        /// </summary>
+        private void FindTetrominoLandingPosition(out Point2[] landingBlocksPosition)
+        {
+            landingBlocksPosition = new Point2[GameState.CurrentTetrominoBlocksPosition.Length];
+
+            GameState.CurrentTetrominoBlocksPosition.CopyTo(landingBlocksPosition, 0);
+
+            while (CheckWorldCollider(landingBlocksPosition))
+            {
+                for (var i = 0; i < Tetrominos.TetrominoSize; i++)
+                {
+                    landingBlocksPosition[i].Y++;
+                }
+            }
+
+            // Put tetromino over the landing position
+            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
+            {
+                landingBlocksPosition[i].Y--;
             }
         }
 

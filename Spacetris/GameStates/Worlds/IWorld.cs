@@ -55,7 +55,7 @@ namespace Spacetris.GameStates.Worlds
 
         void DrawNextTetrominoPreview(RenderWindow target);
 
-        void DrawTetrominoLandingShadow(RenderWindow target, Point2[] tetrominoBlocksPosition);
+        void DrawTetrominoLandingShadow(RenderWindow target);
 
         void DrawAllLayers(RenderWindow target);
 
