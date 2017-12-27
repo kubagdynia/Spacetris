@@ -8,6 +8,7 @@ using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
 using Spacetris.Settings;
 using SFML.Audio;
+using Spacetris.Extensions;
 
 namespace Spacetris.GameStates.Menu
 {
@@ -325,15 +326,16 @@ namespace Spacetris.GameStates.Menu
 
         public void KeyPressed(RenderWindow target, object sender, KeyEventArgs e)
         {
-            if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.Escape)
+            if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S ||
+                e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W || e.Code == Keyboard.Key.Escape)
             {
                 MenuItem nextSelectedMenuItem = _selectedMenuItem;
 
-                if (e.Code == Keyboard.Key.Down)
+                if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S)
                 {
                     nextSelectedMenuItem = GetMenuItems().FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
                 }
-                else if (e.Code == Keyboard.Key.Up)
+                else if (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)
                 {
                     nextSelectedMenuItem = GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
                 }
@@ -361,9 +363,10 @@ namespace Spacetris.GameStates.Menu
                 }
                 else if (_selectedMenuItem.SubMenuItems != null)
                 {
-#if DEBUG
-                    Console.WriteLine("SUB Menu");
-#endif
+                    #if DEBUG
+                    "SUB Menu".Log();
+                    #endif
+
                     _scoreOffset = Point2.Zero;
                     _scoreOffsetStep = 1;
                     _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
@@ -380,6 +383,115 @@ namespace Spacetris.GameStates.Menu
         public void KeyReleased(RenderWindow target, object sender, KeyEventArgs e)
         {
 
+        }
+
+        public void JoystickConnected(object sender, JoystickConnectEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller connected: {arg.JoystickId}".Log();
+            #endif            
+        }
+
+        public void JoystickDisconnected(object sender, JoystickConnectEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller disconnected: {arg.JoystickId}".Log();
+            #endif
+        }
+
+        public void JoystickButtonPressed(RenderWindow target, object sender, JoystickButtonEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Button Pressed: {arg.Button})".Log();
+            #endif
+
+            // Press A button
+            if (arg.Button == 0)
+            {
+                if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
+                {
+                    _selectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                }
+                else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
+                {
+                    _selectedMenuItem.FunctionObject?.Invoke(!(bool)_selectedMenuItem.FunctionObject(null));
+                }
+                else if (_selectedMenuItem.SubMenuItems != null)
+                {
+                    #if DEBUG
+                    "SUB Menu".Log();
+                    #endif
+
+                    _scoreOffset = Point2.Zero;
+                    _scoreOffsetStep = 1;
+                    _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
+                }
+
+                if (_selectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundSelect);
+                    MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
+                }
+            }
+            // Press B button
+            else if (arg.Button == 1)
+            {
+                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+
+                if (_selectedMenuItem.Parent != MenuItemType.None)
+                {
+                    nextSelectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                }
+
+                if (nextSelectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundBeep);
+                    _selectedMenuItem = nextSelectedMenuItem;
+                }
+            }
+        }
+
+        public void JoystickButtonReleased(RenderWindow target, object sender, JoystickButtonEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Button Released: {arg.Button})".Log();
+            #endif
+        }
+
+        public void JoystickMoved(RenderWindow target, object sender, JoystickMoveEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Moved: Axis({arg.Axis}), Position({arg.Position})".Log();
+            #endif
+
+            if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
+            {
+                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+
+                // Move Down
+                nextSelectedMenuItem =
+                    nextSelectedMenuItem = GetMenuItems().FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
+
+                if (nextSelectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundBeep);
+                    _selectedMenuItem = nextSelectedMenuItem;
+                }
+            }
+            else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
+            {
+                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+
+                // Move Up
+                nextSelectedMenuItem =
+                    GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
+
+                if (nextSelectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundBeep);
+                    _selectedMenuItem = nextSelectedMenuItem;
+                }
+            }
         }
 
         private void RecalculateMenuItemsPosition(MenuItem[] items)

@@ -1,10 +1,9 @@
 ﻿using SFML.Graphics;
-using SFML.Window;
 using System;
 
 namespace Spacetris.GameStates.Menu
 {
-    public interface IMenu
+    public interface IMenu : IGameInput
     {
         event EventHandler<MenuItemType> MenuItemSelected;
 
@@ -17,9 +16,5 @@ namespace Spacetris.GameStates.Menu
         void Update(RenderWindow target, float deltaTime);
 
         bool EnableMenuItem(MenuItemType menuItem, bool enable, bool select = true);
-
-        void KeyPressed(RenderWindow target, object sender, KeyEventArgs e);
-
-        void KeyReleased(RenderWindow target, object sender, KeyEventArgs e);
     }
 }

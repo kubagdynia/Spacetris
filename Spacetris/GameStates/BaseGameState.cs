@@ -13,6 +13,9 @@ namespace Spacetris.GameStates
 {
     public abstract class BaseGameState
     {
+        // 
+        protected const double GamepadMinimumInputThreshold = 0.0000001;
+
         protected static readonly Dictionary<Keyboard.Key, string> AllowedKeyboardChars = new Dictionary<Keyboard.Key, string>
         {
             { Keyboard.Key.A, "A" },

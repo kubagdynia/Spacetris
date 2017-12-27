@@ -3,6 +3,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using Spacetris.DataStructures;
+using Spacetris.Extensions;
 using Spacetris.Settings;
 using System;
 using System.Threading;
@@ -687,16 +688,16 @@ namespace Spacetris.GameStates.Worlds
                 _isKeyDownEnabled = true;
             }
 
-            if ((_readyForRotate && e.Code == Keyboard.Key.Up) ||
-                e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.Space ||
-                (e.Code == Keyboard.Key.Down && _isKeyDownEnabled))
+            if ((_readyForRotate && (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)) ||
+                e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.A || e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.D ||
+                e.Code == Keyboard.Key.Space || ((e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S) && _isKeyDownEnabled))
             {
                 if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
                 {
                     WorldState = WorldState.Playing;
                 }
 
-                if (_readyForRotate && e.Code == Keyboard.Key.Up)
+                if (_readyForRotate && (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W))
                 {
                     _readyForRotate = false;
                     if (RotateTetromino())
@@ -704,17 +705,17 @@ namespace Spacetris.GameStates.Worlds
                         PlaySound(GameSoundMoveTetromino);
                     }
                 }
-                else if (e.Code == Keyboard.Key.Left)
+                else if (e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.A)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, -1);
                 }
-                else if (e.Code == Keyboard.Key.Right)
+                else if (e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.D)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 1);
                 }
-                else if (e.Code == Keyboard.Key.Down && _isKeyDownEnabled)
+                else if ((e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S) && _isKeyDownEnabled)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 0, 1);
@@ -757,101 +758,6 @@ namespace Spacetris.GameStates.Worlds
                 }
                 WorldState = WorldState.Pause;
             }
-#if DEBUG
-            else if (WorldState != WorldState.GameOver)
-            {
-                if (e.Code == Keyboard.Key.A)
-                {
-                    MoveTetromino(target, -1);
-                }
-                else if (e.Code == Keyboard.Key.D)
-                {
-                    MoveTetromino(target, 1);
-                }
-                else if (e.Code == Keyboard.Key.W)
-                {
-                    MoveTetromino(target, 0, -1);
-                }
-                else if (e.Code == Keyboard.Key.S)
-                {
-                    MoveTetromino(target, 0, 1);
-                }
-                else if (e.Code == Keyboard.Key.Q)
-                {
-                    CreateNewTetromino(GameState.CurrentTetrominoNumber, GameState.CurrentTetrominoRotationStateNumber);
-                }
-                else if (e.Code == Keyboard.Key.C)
-                {
-                    ClearWorld();
-                    CreateNewTetromino(GameState.CurrentTetrominoNumber, GameState.CurrentTetrominoRotationStateNumber);
-                }
-                else if (e.Code == Keyboard.Key.L)
-                {
-                    _offsetMove += new Point2(4, 0);
-                    UpdateDrawOffset(target, _offsetMove.X, _offsetMove.Y);
-                }
-                else if (e.Code == Keyboard.Key.J)
-                {
-                    _offsetMove += new Point2(-4, 0);
-                    UpdateDrawOffset(target, _offsetMove.X, _offsetMove.Y);
-                }
-                else if (e.Code == Keyboard.Key.I)
-                {
-                    _offsetMove += new Point2(0, -4);
-                    UpdateDrawOffset(target, _offsetMove.X, _offsetMove.Y);
-                }
-                else if (e.Code == Keyboard.Key.K)
-                {
-                    _offsetMove += new Point2(0, 4);
-                    UpdateDrawOffset(target, _offsetMove.X, _offsetMove.Y);
-                }
-
-                else if (e.Code == Keyboard.Key.E)
-                {
-                    CreateNewTetromino();
-                }
-                else if (e.Code == Keyboard.Key.Num1)
-                {
-                    CreateNewTetromino(1, Tetrominos.TetrominoDefaultRotationState, false);
-                }
-                else if (e.Code == Keyboard.Key.Num2)
-                {
-                    CreateNewTetromino(2, Tetrominos.TetrominoDefaultRotationState, false);
-                }
-                else if (e.Code == Keyboard.Key.Num3)
-                {
-                    CreateNewTetromino(3, Tetrominos.TetrominoDefaultRotationState, false);
-                }
-                else if (e.Code == Keyboard.Key.Num4)
-                {
-                    CreateNewTetromino(4, Tetrominos.TetrominoDefaultRotationState, false);
-                }
-                else if (e.Code == Keyboard.Key.Num5)
-                {
-                    CreateNewTetromino(5, Tetrominos.TetrominoDefaultRotationState, false);
-                }
-                else if (e.Code == Keyboard.Key.Num6)
-                {
-                    CreateNewTetromino(6, Tetrominos.TetrominoDefaultRotationState, false);
-                }
-                else if (e.Code == Keyboard.Key.Num7)
-                {
-                    CreateNewTetromino(7, Tetrominos.TetrominoDefaultRotationState, false);
-                }
-                else if (e.Code == Keyboard.Key.PageUp)
-                {
-                    if (GameState.TotalFallTickDelay - 0.1f >= 0)
-                    {
-                        GameState.TotalFallTickDelay -= 0.1f;
-                    }
-
-                }
-                else if (e.Code == Keyboard.Key.PageDown)
-                {
-                    GameState.TotalFallTickDelay += 0.1f;
-                }
-            }
-#endif
         }
 
         public virtual void KeyReleased(RenderWindow target, object sender, KeyEventArgs e)
@@ -861,12 +767,12 @@ namespace Spacetris.GameStates.Worlds
                 return;
             }
 
-            if (e.Code == Keyboard.Key.Up)
+            if (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)
             {
                 _readyForRotate = true;
             }
 
-            if (e.Code == Keyboard.Key.Down && !_isKeyDownEnabled)
+            if ((e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S) && !_isKeyDownEnabled)
             {
                 _isKeyDownEnabled = true;
             }
@@ -874,88 +780,88 @@ namespace Spacetris.GameStates.Worlds
 
         public virtual void JoystickConnected(object sender, JoystickConnectEventArgs arg)
         {
-            Console.WriteLine($"Controller connected: {arg.JoystickId}");
+            #if DEBUG
+            $"Controller connected: {arg.JoystickId}".Log();
+            #endif
         }
 
         public virtual void JoystickDisconnected(object sender, JoystickConnectEventArgs arg)
         {
-            Console.WriteLine($"Controller disconnected: {arg.JoystickId}");
+            #if DEBUG
+            $"Controller disconnected: {arg.JoystickId}".Log();
+            #endif
         }
 
         public virtual void JoystickButtonPressed(RenderWindow target, object sender, JoystickButtonEventArgs arg)
         {
-            Console.WriteLine($"Controller ({arg.JoystickId}) Button Pressed: {arg.Button})");
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Button Pressed: {arg.Button})".Log();
+            #endif
 
-            if (WorldState != WorldState.Playing)
+            if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
             {
-                return;
+                WorldState = WorldState.Playing;
             }
 
-            if (_readyForRotate && arg.Button == 3)
+            // Press Bumper button
+            if (arg.Button == 4 || arg.Button == 5)
             {
-                _readyForRotate = false;
-                RotateTetromino();
-            }
-            else if (arg.Button == 2)
-            {
-                MoveTetromino(target, -1);
-            }
-            else if (arg.Button == 1)
-            {
-                MoveTetromino(target, 1);
-            }
-            else if (arg.Button == 0)
-            {
+                FindTetrominoLandingPosition(out Point2[] landingBlocksPosition);
+                MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);
                 MoveTetromino(target, 0, 1);
+            }
+            // Press Menu or B button
+            else if (arg.Button == 7 || arg.Button == 1)
+            {
+                if (_timer != null)
+                {
+                    _timer.Dispose();
+                }
+                WorldState = WorldState.Pause;
             }
         }
 
         public virtual void JoystickButtonReleased(RenderWindow target, object sender, JoystickButtonEventArgs arg)
         {
-            Console.WriteLine($"Controller ({arg.JoystickId}) Button Released: {arg.Button})");
-
-            if (WorldState != WorldState.Playing)
-            {
-                return;
-            }
-
-            if (arg.Button == 3)
-            {
-                _readyForRotate = true;
-            }
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Button Released: {arg.Button})".Log();
+            #endif
         }
 
         public virtual void JoystickMoved(RenderWindow target, object sender, JoystickMoveEventArgs arg)
         {
-            Console.WriteLine($"Controller ({arg.JoystickId}) Moved: Axis({arg.Axis}), Position({arg.Position})");
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Moved: Axis({arg.Axis}), Position({arg.Position})".Log();
+            #endif
 
-            if (WorldState != WorldState.Playing)
+            if (arg.Axis == Joystick.Axis.PovX || arg.Axis == Joystick.Axis.PovY)
             {
-                return;
-            }
+                if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
+                {
+                    WorldState = WorldState.Playing;
+                }
 
-            double tolerance = 0.0000001;
-
-            if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - (-100)) < tolerance)
-            {
-                MoveTetromino(target, -1);
-            }
-            else if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < tolerance)
-            {
-                MoveTetromino(target, 1);
-            }
-            else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - (-100)) < tolerance)
-            {
-                MoveTetromino(target, 0, 1);
-            }
-            else if (_readyForRotate && arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < tolerance)
-            {
-                _readyForRotate = false;
-                RotateTetromino();
-            }
-            else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < tolerance)
-            {
-                _readyForRotate = true;
+                if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
+                {
+                    MoveTetromino(target, -1);
+                }
+                else if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
+                {
+                    MoveTetromino(target, 1);
+                }
+                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
+                {
+                    MoveTetromino(target, 0, 1);
+                }
+                else if (_readyForRotate && arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
+                {
+                    _readyForRotate = false;
+                    RotateTetromino();
+                }
+                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < GamepadMinimumInputThreshold)
+                {
+                    _readyForRotate = true;
+                }
             }
         }
 
@@ -1065,7 +971,7 @@ namespace Spacetris.GameStates.Worlds
 
         private void Tick(object state)
         {
-            Console.WriteLine("Counter Tick");
+            "Counter Tick".Log();
 
             if (--_tickTimer == 0)
             {

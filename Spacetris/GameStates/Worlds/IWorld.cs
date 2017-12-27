@@ -5,7 +5,7 @@ using System;
 
 namespace Spacetris.GameStates.Worlds
 {
-    public interface IWorld
+    public interface IWorld : IGameInput
     {
         event EventHandler<WorldState> WorldStateChanged;
 
@@ -90,19 +90,5 @@ namespace Spacetris.GameStates.Worlds
         bool CreateNewTetromino(int tetrominoNumber, int tetrominoRotationStateNumber, bool setDefaultStartPosition = true);
 
         void ClearWorld();
-
-        void KeyPressed(RenderWindow target, object sender, KeyEventArgs e);
-
-        void KeyReleased(RenderWindow target, object sender, KeyEventArgs e);
-
-        void JoystickConnected(object sender, JoystickConnectEventArgs arg);
-
-        void JoystickDisconnected(object sender, JoystickConnectEventArgs arg);
-
-        void JoystickButtonPressed(RenderWindow target, object sender, JoystickButtonEventArgs arg);
-
-        void JoystickButtonReleased(RenderWindow target, object sender, JoystickButtonEventArgs arg);
-
-        void JoystickMoved(RenderWindow target, object sender, JoystickMoveEventArgs arg);
     }
 }
