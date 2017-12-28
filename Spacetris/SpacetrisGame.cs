@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -6,6 +7,7 @@ using Spacetris.Extensions;
 using Spacetris.GameStates;
 using Spacetris.GameStates.Menu;
 using Spacetris.GameStates.Worlds;
+using Spacetris.Managers;
 using Spacetris.Settings;
 
 namespace Spacetris
@@ -29,6 +31,17 @@ namespace Spacetris
         protected override void LoadContent()
         {
             GameSettings.Load();
+
+            // Load music
+            AssetManager.Instance.Music.Load("music01", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, "music.ogg"));
+
+            // Load textures
+            AssetManager.Instance.Texture.Load("pad01", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "pad02.png"));
+
+            // Load fonts
+            AssetManager.Instance.Font.Load("tetris", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "Tetris.ttf"));
+            AssetManager.Instance.Font.Load("slkscr", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "slkscr.ttf"));
+            AssetManager.Instance.Font.Load("arial", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "arial.ttf"));
         }
 
         protected override void Initialize()

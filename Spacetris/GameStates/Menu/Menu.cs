@@ -9,6 +9,7 @@ using Spacetris.DataStructures;
 using Spacetris.Settings;
 using SFML.Audio;
 using Spacetris.Extensions;
+using Spacetris.Managers;
 
 namespace Spacetris.GameStates.Menu
 {
@@ -56,56 +57,28 @@ namespace Spacetris.GameStates.Menu
 
         private static Sound _menuSoundBeep;
         private static Sound _menuSoundSelect;
-        private static Music _menuMusic;
-
-        private static string TitleFontPath => GameSettings.FontsPath + "Tetris.ttf";
-
-        private static Font _titleFont;
 
         private static Font TitleFont
         {
             get
             {
-                if (_titleFont == null)
-                {
-                    _titleFont = LoadFont(TitleFontPath);
-                }
-
-                return _titleFont;
+                return AssetManager.Instance.Font.Get("tetris");
             }
         }
-
-        private static string ItemFontPath => GameSettings.FontsPath + "slkscr.ttf";
-
-        private static Font _itemFont;
 
         private static Font ItemFont
         {
             get
             {
-                if (_itemFont == null)
-                {
-                    _itemFont = LoadFont(ItemFontPath);
-                }
-
-                return _itemFont;
+                return AssetManager.Instance.Font.Get("slkscr");
             }
         }
-
-        private static string MadeByFontPath => GameSettings.FontsPath + "arial.ttf";
-
-        private static Font _madeByFont;
 
         private static Font MadeByFont
         {
             get
             {
-                if (_madeByFont == null)
-                {
-                    _madeByFont = LoadFont(MadeByFontPath);
-                }
-
-                return _madeByFont;
+                return AssetManager.Instance.Font.Get("arial");
             }
         }
 
@@ -145,11 +118,11 @@ namespace Spacetris.GameStates.Menu
             _starfield = new Starfield(target.Size.X, target.Size.Y);
             _centerX = (int)target.Size.X / 2;
 
-            _menuMusic.Volume = GameSettings.MusicVolume;
-            _menuMusic.Loop = true;
+            GetMusic().Volume = GameSettings.MusicVolume;
+            GetMusic().Loop = true;
             if (GameSettings.IsMusic)
             {
-                _menuMusic.Play();
+                GetMusic().Play();
             }
         }
 
@@ -158,9 +131,6 @@ namespace Spacetris.GameStates.Menu
             // Load sounds
             _menuSoundBeep = LoadSound("beep.wav");
             _menuSoundSelect = LoadSound("select.wav");
-
-            // Load Music
-            _menuMusic = LoadMusic("music.ogg");
         }
 
         public void DrawBackground(RenderWindow target)
@@ -286,7 +256,6 @@ namespace Spacetris.GameStates.Menu
                 }
 
                 MadeByColor = new Color(MadeByColor.R, MadeByColor.G, MadeByColor.B, Convert.ToByte(newAlphaValue));
-
 
                 _totalTimer = 0;
             }
@@ -494,6 +463,11 @@ namespace Spacetris.GameStates.Menu
             }
         }
 
+        private static Music GetMusic()
+        {
+            return AssetManager.Instance.Music.Get("music01");
+        }
+
         private void RecalculateMenuItemsPosition(MenuItem[] items)
         {
             if (items == null || !items.Any())
@@ -589,11 +563,11 @@ namespace Spacetris.GameStates.Menu
                             GameSettings.IsMusic = (bool)x;
                             if (GameSettings.IsMusic)
                             {
-                                _menuMusic.Play();
+                                GetMusic().Play();
                             }
                             else
                             {
-                                _menuMusic.Stop();
+                                GetMusic().Stop();
                             }
                             GameSettings.Save();
 

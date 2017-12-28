@@ -98,18 +98,18 @@ namespace Spacetris.GameStates
             target.Draw(text);
         }
 
-        protected static Font LoadFont(string fontPath)
-        {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fontPath);
-            Font font = new Font(path);
-            return font;
-        }
-
         protected static Sprite LoadSprite(string texturePath, Point2 drawOffset)
         {
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, texturePath);
             Texture texture = new Texture(path);
 
+            Sprite sprite = LoadSprite(texture, drawOffset);
+
+            return sprite;
+        }
+
+        protected static Sprite LoadSprite(Texture texture, Point2 drawOffset)
+        {
             Sprite sprite = new Sprite(texture);
             sprite.Position = new Vector2f(drawOffset.X, drawOffset.Y);
 
@@ -124,18 +124,11 @@ namespace Spacetris.GameStates
             }
 
             SoundBuffer soundBuffer = new SoundBuffer(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.SoundsPath, fileName));
-            return new Sound(soundBuffer);
-        }
 
-        protected static Music LoadMusic(string fileName)
-        {
-            if (string.IsNullOrWhiteSpace(fileName))
+            return new Sound(soundBuffer)
             {
-                return null;
-            }
-
-            Music music = new Music(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, fileName));
-            return music;
+                Volume = GameSettings.SoundVolume
+            };
         }
 
         protected static void PlaySound(Sound sound)

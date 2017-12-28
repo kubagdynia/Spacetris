@@ -1,6 +1,7 @@
 ﻿using SFML.Graphics;
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
+using Spacetris.Managers;
 using Spacetris.Settings;
 using System.IO;
 
@@ -23,9 +24,9 @@ namespace Spacetris.GameStates.Worlds
 
         protected override string BlocksTexturePath => Path.Combine(GameSettings.TilesetsPath, "tilesets.png");
 
-        protected override string FontPath => Path.Combine(GameSettings.FontsPath, "arial.ttf");
+        protected override string FontName => "arial";
 
-        protected override string CounterFontPath => Path.Combine(GameSettings.FontsPath, "Tetris.ttf");
+        protected override string CounterFontName => "tetris";
 
         public override void DrawScore(RenderWindow target, int x, int y, byte alpha = 255)
         {
@@ -75,6 +76,12 @@ namespace Spacetris.GameStates.Worlds
             GameSoundRemoveLine = LoadSound("removeline.ogg");
             GameSoundGameOver = LoadSound("gameover.ogg");
             GameSoundLevelUp = LoadSound("levelup.ogg");
+
+            // Load texture of game controller
+            GameController = LoadSprite(AssetManager.Instance.Texture.Get("pad01"), new Point2(590, 470));
+            GameController.Color = new Color(255, 255, 255, 50);
+
+
         }
     }
 }

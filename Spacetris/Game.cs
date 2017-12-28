@@ -90,6 +90,8 @@ namespace Spacetris
                 {
                     Window.DispatchEvents();
 
+                    Joystick.Update();
+
                     Update();
 
                     // Subtract the udpate frequency from the total time

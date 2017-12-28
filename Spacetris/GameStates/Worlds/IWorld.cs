@@ -65,6 +65,8 @@ namespace Spacetris.GameStates.Worlds
 
         void DrawGameOver(RenderWindow target);
 
+        void DrawGameController(RenderWindow target);
+
         int CheckLines(RenderWindow target);
 
         int CalculateScore(int level, int lines, bool landed);

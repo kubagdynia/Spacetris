@@ -4,6 +4,7 @@ using SFML.System;
 using SFML.Window;
 using Spacetris.DataStructures;
 using Spacetris.Extensions;
+using Spacetris.Managers;
 using Spacetris.Settings;
 using System;
 using System.Threading;
@@ -17,6 +18,8 @@ namespace Spacetris.GameStates.Worlds
 
         private Timer _timer;
         private int _tickTimer;
+
+        public Sprite GameController;
 
         public Sound GameSoundMoveTetromino;
         public Sound GameSoundDropTetromino;
@@ -65,9 +68,9 @@ namespace Spacetris.GameStates.Worlds
 
         protected abstract string BlocksTexturePath { get; }
 
-        protected abstract string FontPath { get; }
+        protected abstract string FontName { get; }
 
-        protected abstract string CounterFontPath { get; }
+        protected abstract string CounterFontName { get; }
 
         private bool _readyForRotate = true;
 
@@ -101,31 +104,19 @@ namespace Spacetris.GameStates.Worlds
             }
         }
 
-        private Font _font;
         public Font Font
         {
             get
             {
-                if (_font == null)
-                {
-                    _font = LoadFont(FontPath);
-                }
-
-                return _font;
+                return AssetManager.Instance.Font.Get(FontName);
             }
         }
 
-        private Font _counterFont;
         public Font CounterFont
         {
             get
             {
-                if (_counterFont == null)
-                {
-                    _counterFont = LoadFont(CounterFontPath);
-                }
-
-                return _counterFont;
+                return AssetManager.Instance.Font.Get(CounterFontName);
             }
         }
 
@@ -394,6 +385,11 @@ namespace Spacetris.GameStates.Worlds
             else if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
             {
                 DrawStartCounter(target);
+            }
+
+            if (Joystick.IsConnected(0))
+            {
+                DrawGameController(target);
             }
         }
 
@@ -688,7 +684,38 @@ namespace Spacetris.GameStates.Worlds
                 _isKeyDownEnabled = true;
             }
 
-            if ((_readyForRotate && (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)) ||
+            if (WorldState == WorldState.GameOver)
+            {
+                if (e.Code == Keyboard.Key.Escape)
+                {
+                    WorldState = WorldState.Quit;
+                }
+                else if (GameSettings.IsEnoughPointsForTop5(GameState.Score))
+                {
+                    if (AllowedKeyboardChars.ContainsKey(e.Code) && _userName.Length < 20)
+                    {
+                        _userName += AllowedKeyboardChars[e.Code];
+                    }
+                    else if (e.Code == Keyboard.Key.BackSpace && _userName.Length > 0)
+                    {
+                        _userName = _userName.Remove(_userName.Length - 1);
+                    }
+                    else if (e.Code == Keyboard.Key.Return)
+                    {
+                        GameSettings.AddScore(new ScoreLine(_userName, GameState.Lines, GameState.Level, GameState.Score));
+                        WorldState = WorldState.Quit;
+                    }
+                }
+            }
+            else if (e.Code == Keyboard.Key.Escape || (e.Code == Keyboard.Key.P && WorldState != WorldState.GameOver))
+            {
+                if (_timer != null)
+                {
+                    _timer.Dispose();
+                }
+                WorldState = WorldState.Pause;
+            }
+            else if ((_readyForRotate && (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)) ||
                 e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.A || e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.D ||
                 e.Code == Keyboard.Key.Space || ((e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S) && _isKeyDownEnabled))
             {
@@ -726,37 +753,6 @@ namespace Spacetris.GameStates.Worlds
                     MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);
                     MoveTetromino(target, 0, 1);
                 }
-            }
-            else if (WorldState == WorldState.GameOver)
-            {
-                if (e.Code == Keyboard.Key.Escape)
-                {
-                    WorldState = WorldState.Quit;
-                }
-                else if (GameSettings.IsEnoughPointsForTop5(GameState.Score))
-                {
-                    if (AllowedKeyboardChars.ContainsKey(e.Code) && _userName.Length < 20)
-                    {
-                        _userName += AllowedKeyboardChars[e.Code];
-                    }
-                    else if (e.Code == Keyboard.Key.BackSpace && _userName.Length > 0)
-                    {
-                        _userName = _userName.Remove(_userName.Length - 1);
-                    }
-                    else if (e.Code == Keyboard.Key.Return)
-                    {
-                        GameSettings.AddScore(new ScoreLine(_userName, GameState.Lines, GameState.Level, GameState.Score));
-                        WorldState = WorldState.Quit;
-                    }
-                }
-            }
-            else if (e.Code == Keyboard.Key.Escape || (e.Code == Keyboard.Key.P && WorldState != WorldState.GameOver))
-            {
-                if (_timer != null)
-                {
-                    _timer.Dispose();
-                }
-                WorldState = WorldState.Pause;
             }
         }
 
@@ -843,26 +839,37 @@ namespace Spacetris.GameStates.Worlds
 
                 if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
                 {
+                    PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, -1);
                 }
                 else if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
                 {
+                    PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 1);
                 }
                 else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
                 {
+                    PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 0, 1);
                 }
                 else if (_readyForRotate && arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
                 {
                     _readyForRotate = false;
-                    RotateTetromino();
+                    if (RotateTetromino())
+                    {
+                        PlaySound(GameSoundMoveTetromino);
+                    }
                 }
                 else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < GamepadMinimumInputThreshold)
                 {
                     _readyForRotate = true;
                 }
             }
+        }
+
+        public virtual void DrawGameController(RenderWindow target)
+        {
+            target.Draw(GameController);
         }
 
         /// <summary>

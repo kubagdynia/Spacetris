@@ -1,5 +1,4 @@
 ﻿using Spacetris.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -66,6 +65,12 @@ namespace Spacetris.Settings
         {
             get => _settings.MusicPath;
             set => _settings.MusicPath = value;
+        }
+
+        public static string ImagesPath
+        {
+            get => _settings.ImagesPath;
+            set => _settings.ImagesPath = value;
         }
 
         private static Settings _settings = new Settings();
