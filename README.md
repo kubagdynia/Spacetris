@@ -20,3 +20,9 @@ Of course you can run it from Visual Studio or Visual Studio Code by opening sol
 
 If you want to run it from the console go to "Spacetris\Spacetris" and type
 * `dotnet run`
+
+### Builds
+| Branch       | Status      |
+|--------------|-------------|
+| master       | ![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=master) |
+| develop      | ![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=develop)|
