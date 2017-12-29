@@ -4,6 +4,7 @@ using SFML.System;
 using SFML.Window;
 using Spacetris.DataStructures;
 using Spacetris.Extensions;
+using Spacetris.Managers;
 using Spacetris.Settings;
 using System;
 using System.Collections.Generic;
@@ -139,6 +140,22 @@ namespace Spacetris.GameStates
             }
 
             sound.Play();
+        }
+
+        protected static Sprite LoadGameControllerSprite()
+        {
+            Sprite sprite = LoadSprite(AssetManager.Instance.Texture.Get("gamepad"), new Point2(20, 20));
+            sprite.Color = new Color(255, 255, 255, 50);
+
+            return sprite;
+        }
+
+        protected static Sprite LoadControlsControllerSprite()
+        {
+            Sprite sprite = LoadSprite(AssetManager.Instance.Texture.Get("controls"), new Point2(700, 350));
+            sprite.Color = new Color(255, 255, 255, 100);
+
+            return sprite;
         }
 
         protected abstract void LoadContent();

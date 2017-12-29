@@ -10,6 +10,7 @@ using Spacetris.Settings;
 using SFML.Audio;
 using Spacetris.Extensions;
 using Spacetris.Managers;
+using Spacetris.GameStates.Worlds;
 
 namespace Spacetris.GameStates.Menu
 {
@@ -39,6 +40,9 @@ namespace Spacetris.GameStates.Menu
         private int _menuTitleSizeStep = 1;
 
         private int _menuMadeByAlphaStep = 2;
+
+        private Sprite _gameController;
+        private Sprite _controlsSprite;
 
         private static readonly Color MenuTitleColor = new Color(255, 216, 48, 189);
         private static readonly Color MenuItemsColor = new Color(242, 51, 51, 189);
@@ -131,6 +135,10 @@ namespace Spacetris.GameStates.Menu
             // Load sounds
             _menuSoundBeep = LoadSound("beep.wav");
             _menuSoundSelect = LoadSound("select.wav");
+
+            // Load sprites
+            _gameController = LoadGameControllerSprite();
+            _controlsSprite = LoadControlsControllerSprite();
         }
 
         public void DrawBackground(RenderWindow target)
@@ -160,6 +168,34 @@ namespace Spacetris.GameStates.Menu
                     DrawMenuItem(target, menuItem, _centerX, MenuItemsColor, 40, false);
                 }
             }
+        }
+
+        public void DrawGameController(RenderWindow target)
+        {
+            if (Joystick.IsConnected(0))
+            {
+                target.Draw(_gameController);
+            }
+        }
+
+        public void DrawControls(RenderWindow target)
+        {
+            if (_selectedMenuItem.Parent == MenuItemType.None)
+            {
+                target.Draw(_controlsSprite);
+            }
+        }
+
+        public void DrawAllLayers(RenderWindow target, IWorld world)
+        {
+            DrawBackground(target);
+            if (world.WorldState == WorldState.Pause)
+            {
+                world.DrawWorld(target, false, 15);
+            }
+            DrawMenu(target);
+            DrawGameController(target);
+            DrawControls(target);
         }
 
         private void DrawMenuItem(RenderTarget target, MenuItem menuItem, int x, Color color, int size, bool bold = true)

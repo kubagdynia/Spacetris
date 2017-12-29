@@ -1,7 +1,6 @@
 ﻿using SFML.Graphics;
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
-using Spacetris.Managers;
 using Spacetris.Settings;
 using System.IO;
 
@@ -77,11 +76,8 @@ namespace Spacetris.GameStates.Worlds
             GameSoundGameOver = LoadSound("gameover.ogg");
             GameSoundLevelUp = LoadSound("levelup.ogg");
 
-            // Load texture of game controller
-            GameController = LoadSprite(AssetManager.Instance.Texture.Get("pad01"), new Point2(590, 470));
-            GameController.Color = new Color(255, 255, 255, 50);
-
-
+            // Load sprites
+            GameController = LoadGameControllerSprite();
         }
     }
 }

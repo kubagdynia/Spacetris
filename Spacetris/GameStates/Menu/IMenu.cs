@@ -1,4 +1,5 @@
 ﻿using SFML.Graphics;
+using Spacetris.GameStates.Worlds;
 using System;
 
 namespace Spacetris.GameStates.Menu
@@ -12,6 +13,12 @@ namespace Spacetris.GameStates.Menu
         void DrawBackground(RenderWindow target);
 
         void DrawMenu(RenderWindow target);
+
+        void DrawGameController(RenderWindow target);
+
+        void DrawControls(RenderWindow target);
+
+        void DrawAllLayers(RenderWindow target, IWorld world);
 
         void Update(RenderWindow target, float deltaTime);
 

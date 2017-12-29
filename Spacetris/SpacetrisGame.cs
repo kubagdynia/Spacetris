@@ -36,7 +36,8 @@ namespace Spacetris
             AssetManager.Instance.Music.Load("music01", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, "music.ogg"));
 
             // Load textures
-            AssetManager.Instance.Texture.Load("pad01", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "pad02.png"));
+            AssetManager.Instance.Texture.Load("gamepad", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "gamepad.png"));
+            AssetManager.Instance.Texture.Load("controls", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "controls.png"));
 
             // Load fonts
             AssetManager.Instance.Font.Load("tetris", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "Tetris.ttf"));
@@ -92,12 +93,7 @@ namespace Spacetris
                     _world.DrawAllLayers(Window);
                     break;
                 case SpacetrisGameState.Menu:
-                    _menu.DrawBackground(Window);
-                    if (_world.WorldState == WorldState.Pause)
-                    {
-                        _world.DrawWorld(Window, false, 15);
-                    }
-                    _menu.DrawMenu(Window);
+                    _menu.DrawAllLayers(Window, _world);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
