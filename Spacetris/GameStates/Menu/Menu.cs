@@ -8,6 +8,9 @@ using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
 using Spacetris.Settings;
 using SFML.Audio;
+using Spacetris.Extensions;
+using Spacetris.Managers;
+using Spacetris.GameStates.Worlds;
 
 namespace Spacetris.GameStates.Menu
 {
@@ -38,6 +41,9 @@ namespace Spacetris.GameStates.Menu
 
         private int _menuMadeByAlphaStep = 2;
 
+        private Sprite _gameController;
+        private Sprite _controlsSprite;
+
         private static readonly Color MenuTitleColor = new Color(255, 216, 48, 189);
         private static readonly Color MenuItemsColor = new Color(242, 51, 51, 189);
         private static readonly Color ScoresColor = new Color(255, 55, 55, 189);
@@ -55,56 +61,28 @@ namespace Spacetris.GameStates.Menu
 
         private static Sound _menuSoundBeep;
         private static Sound _menuSoundSelect;
-        private static Music _menuMusic;
-
-        private static string TitleFontPath => GameSettings.FontsPath + "Tetris.ttf";
-
-        private static Font _titleFont;
 
         private static Font TitleFont
         {
             get
             {
-                if (_titleFont == null)
-                {
-                    _titleFont = LoadFont(TitleFontPath);
-                }
-
-                return _titleFont;
+                return AssetManager.Instance.Font.Get("tetris");
             }
         }
-
-        private static string ItemFontPath => GameSettings.FontsPath + "slkscr.ttf";
-
-        private static Font _itemFont;
 
         private static Font ItemFont
         {
             get
             {
-                if (_itemFont == null)
-                {
-                    _itemFont = LoadFont(ItemFontPath);
-                }
-
-                return _itemFont;
+                return AssetManager.Instance.Font.Get("slkscr");
             }
         }
-
-        private static string MadeByFontPath => GameSettings.FontsPath + "arial.ttf";
-
-        private static Font _madeByFont;
 
         private static Font MadeByFont
         {
             get
             {
-                if (_madeByFont == null)
-                {
-                    _madeByFont = LoadFont(MadeByFontPath);
-                }
-
-                return _madeByFont;
+                return AssetManager.Instance.Font.Get("arial");
             }
         }
 
@@ -144,11 +122,11 @@ namespace Spacetris.GameStates.Menu
             _starfield = new Starfield(target.Size.X, target.Size.Y);
             _centerX = (int)target.Size.X / 2;
 
-            _menuMusic.Volume = GameSettings.MusicVolume;
-            _menuMusic.Loop = true;
+            GetMusic().Volume = GameSettings.MusicVolume;
+            GetMusic().Loop = true;
             if (GameSettings.IsMusic)
             {
-                _menuMusic.Play();
+                GetMusic().Play();
             }
         }
 
@@ -158,8 +136,9 @@ namespace Spacetris.GameStates.Menu
             _menuSoundBeep = LoadSound("beep.wav");
             _menuSoundSelect = LoadSound("select.wav");
 
-            // Load Music
-            _menuMusic = LoadMusic("music.ogg");
+            // Load sprites
+            _gameController = LoadGameControllerSprite();
+            _controlsSprite = LoadControlsControllerSprite();
         }
 
         public void DrawBackground(RenderWindow target)
@@ -189,6 +168,34 @@ namespace Spacetris.GameStates.Menu
                     DrawMenuItem(target, menuItem, _centerX, MenuItemsColor, 40, false);
                 }
             }
+        }
+
+        public void DrawGameController(RenderWindow target)
+        {
+            if (Joystick.IsConnected(0))
+            {
+                target.Draw(_gameController);
+            }
+        }
+
+        public void DrawControls(RenderWindow target)
+        {
+            if (_selectedMenuItem.Parent == MenuItemType.None)
+            {
+                target.Draw(_controlsSprite);
+            }
+        }
+
+        public void DrawAllLayers(RenderWindow target, IWorld world)
+        {
+            DrawBackground(target);
+            if (world.WorldState == WorldState.Pause)
+            {
+                world.DrawWorld(target, false, 15);
+            }
+            DrawMenu(target);
+            DrawGameController(target);
+            DrawControls(target);
         }
 
         private void DrawMenuItem(RenderTarget target, MenuItem menuItem, int x, Color color, int size, bool bold = true)
@@ -286,7 +293,6 @@ namespace Spacetris.GameStates.Menu
 
                 MadeByColor = new Color(MadeByColor.R, MadeByColor.G, MadeByColor.B, Convert.ToByte(newAlphaValue));
 
-
                 _totalTimer = 0;
             }
 
@@ -325,15 +331,16 @@ namespace Spacetris.GameStates.Menu
 
         public void KeyPressed(RenderWindow target, object sender, KeyEventArgs e)
         {
-            if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.Escape)
+            if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S ||
+                e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W || e.Code == Keyboard.Key.Escape)
             {
                 MenuItem nextSelectedMenuItem = _selectedMenuItem;
 
-                if (e.Code == Keyboard.Key.Down)
+                if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S)
                 {
                     nextSelectedMenuItem = GetMenuItems().FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
                 }
-                else if (e.Code == Keyboard.Key.Up)
+                else if (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)
                 {
                     nextSelectedMenuItem = GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
                 }
@@ -361,9 +368,10 @@ namespace Spacetris.GameStates.Menu
                 }
                 else if (_selectedMenuItem.SubMenuItems != null)
                 {
-#if DEBUG
-                    Console.WriteLine("SUB Menu");
-#endif
+                    #if DEBUG
+                    "SUB Menu".Log();
+                    #endif
+
                     _scoreOffset = Point2.Zero;
                     _scoreOffsetStep = 1;
                     _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
@@ -380,6 +388,120 @@ namespace Spacetris.GameStates.Menu
         public void KeyReleased(RenderWindow target, object sender, KeyEventArgs e)
         {
 
+        }
+
+        public void JoystickConnected(object sender, JoystickConnectEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller connected: {arg.JoystickId}".Log();
+            #endif            
+        }
+
+        public void JoystickDisconnected(object sender, JoystickConnectEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller disconnected: {arg.JoystickId}".Log();
+            #endif
+        }
+
+        public void JoystickButtonPressed(RenderWindow target, object sender, JoystickButtonEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Button Pressed: {arg.Button})".Log();
+            #endif
+
+            // Press A button
+            if (arg.Button == 0)
+            {
+                if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
+                {
+                    _selectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                }
+                else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
+                {
+                    _selectedMenuItem.FunctionObject?.Invoke(!(bool)_selectedMenuItem.FunctionObject(null));
+                }
+                else if (_selectedMenuItem.SubMenuItems != null)
+                {
+                    #if DEBUG
+                    "SUB Menu".Log();
+                    #endif
+
+                    _scoreOffset = Point2.Zero;
+                    _scoreOffsetStep = 1;
+                    _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
+                }
+
+                if (_selectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundSelect);
+                    MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
+                }
+            }
+            // Press B button
+            else if (arg.Button == 1)
+            {
+                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+
+                if (_selectedMenuItem.Parent != MenuItemType.None)
+                {
+                    nextSelectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                }
+
+                if (nextSelectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundBeep);
+                    _selectedMenuItem = nextSelectedMenuItem;
+                }
+            }
+        }
+
+        public void JoystickButtonReleased(RenderWindow target, object sender, JoystickButtonEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Button Released: {arg.Button})".Log();
+            #endif
+        }
+
+        public void JoystickMoved(RenderWindow target, object sender, JoystickMoveEventArgs arg)
+        {
+            #if DEBUG
+            $"Controller ({arg.JoystickId}) Moved: Axis({arg.Axis}), Position({arg.Position})".Log();
+            #endif
+
+            if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
+            {
+                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+
+                // Move Down
+                nextSelectedMenuItem =
+                    nextSelectedMenuItem = GetMenuItems().FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
+
+                if (nextSelectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundBeep);
+                    _selectedMenuItem = nextSelectedMenuItem;
+                }
+            }
+            else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
+            {
+                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+
+                // Move Up
+                nextSelectedMenuItem =
+                    GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
+
+                if (nextSelectedMenuItem != null)
+                {
+                    PlaySound(_menuSoundBeep);
+                    _selectedMenuItem = nextSelectedMenuItem;
+                }
+            }
+        }
+
+        private static Music GetMusic()
+        {
+            return AssetManager.Instance.Music.Get("music01");
         }
 
         private void RecalculateMenuItemsPosition(MenuItem[] items)
@@ -477,11 +599,11 @@ namespace Spacetris.GameStates.Menu
                             GameSettings.IsMusic = (bool)x;
                             if (GameSettings.IsMusic)
                             {
-                                _menuMusic.Play();
+                                GetMusic().Play();
                             }
                             else
                             {
-                                _menuMusic.Stop();
+                                GetMusic().Stop();
                             }
                             GameSettings.Save();
 

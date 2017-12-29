@@ -23,9 +23,9 @@ namespace Spacetris.GameStates.Worlds
 
         protected override string BlocksTexturePath => Path.Combine(GameSettings.TilesetsPath, "tilesets.png");
 
-        protected override string FontPath => Path.Combine(GameSettings.FontsPath, "arial.ttf");
+        protected override string FontName => "arial";
 
-        protected override string CounterFontPath => Path.Combine(GameSettings.FontsPath, "Tetris.ttf");
+        protected override string CounterFontName => "tetris";
 
         public override void DrawScore(RenderWindow target, int x, int y, byte alpha = 255)
         {
@@ -75,6 +75,9 @@ namespace Spacetris.GameStates.Worlds
             GameSoundRemoveLine = LoadSound("removeline.ogg");
             GameSoundGameOver = LoadSound("gameover.ogg");
             GameSoundLevelUp = LoadSound("levelup.ogg");
+
+            // Load sprites
+            GameController = LoadGameControllerSprite();
         }
     }
 }

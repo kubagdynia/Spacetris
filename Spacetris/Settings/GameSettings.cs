@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Spacetris.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -67,6 +67,12 @@ namespace Spacetris.Settings
             set => _settings.MusicPath = value;
         }
 
+        public static string ImagesPath
+        {
+            get => _settings.ImagesPath;
+            set => _settings.ImagesPath = value;
+        }
+
         private static Settings _settings = new Settings();
 
         public static void Save()
@@ -83,9 +89,10 @@ namespace Spacetris.Settings
             }
             else if (!fileExists)
             {
-#if DEBUG
-                Console.WriteLine("Create settings file");
-#endif
+                #if DEBUG
+                "Create settings file".Log();
+                #endif
+
                 // If file is not exists then create file with default data
                 Save();
             }
