@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Spacetris.Extensions;
 using System;
 using System.IO;
 using System.Text;
@@ -29,16 +30,18 @@ namespace Spacetris.Settings
             try
             {
                 File.WriteAllBytes(tempPath, jsonByte);
-#if DEBUG
-                Console.WriteLine("Saved Data to: " + tempPath);
-#endif
+
+                #if DEBUG
+                $"Saved Data to: {tempPath}".Log();
+                #endif
             }
             catch (Exception e)
             {
-#if DEBUG
-                Console.WriteLine("Failed to save data to: " + tempPath);
-                Console.WriteLine("Error: " + e.Message);
-#endif
+                #if DEBUG
+                $"Failed to save data to: {tempPath}".Log();
+                $"Error: {e.Message}".Log();
+                #endif
+
                 throw;
             }
         }
@@ -57,18 +60,20 @@ namespace Spacetris.Settings
             // Exit if Directory does not exist
             if (!Directory.Exists(Path.GetDirectoryName(tempPath)))
             {
-#if DEBUG
-                Console.WriteLine("Directory does not exist");
-#endif
+                #if DEBUG
+                "Directory does not exist".Log();
+                #endif
+
                 return default(T);
             }
 
             // Exit if File does not exist
             if (!File.Exists(tempPath))
             {
-#if DEBUG
-                Console.WriteLine("File does not exist");
-#endif
+                #if DEBUG
+                "File does not exist".Log();
+                #endif
+
                 return default(T);
             }
 
@@ -79,16 +84,18 @@ namespace Spacetris.Settings
             try
             {
                 jsonByte = File.ReadAllBytes(tempPath);
-#if DEBUG
-                Console.WriteLine("Loaded data from: " + tempPath);
-#endif
+                
+                #if DEBUG
+                $"Loaded data from: {tempPath}".Log();
+                #endif
             }
             catch (Exception e)
             {
-#if DEBUG
-                Console.WriteLine("Failed to load data from: " + tempPath);
-                Console.WriteLine("Error: " + e.Message);
-#endif
+                #if DEBUG
+                $"Failed to load data from: {tempPath}".Log();
+                $"Error: {e.Message}".Log();
+                #endif
+
                 throw;
             }
 

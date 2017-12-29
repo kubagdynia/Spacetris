@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using Spacetris.Extensions;
 using Spacetris.GameStates;
 using Spacetris.GameStates.Menu;
 using Spacetris.GameStates.Worlds;
+using Spacetris.Managers;
 using Spacetris.Settings;
 
 namespace Spacetris
@@ -28,6 +31,18 @@ namespace Spacetris
         protected override void LoadContent()
         {
             GameSettings.Load();
+
+            // Load music
+            AssetManager.Instance.Music.Load("music01", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, "music.ogg"));
+
+            // Load textures
+            AssetManager.Instance.Texture.Load("gamepad", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "gamepad.png"));
+            AssetManager.Instance.Texture.Load("controls", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "controls.png"));
+
+            // Load fonts
+            AssetManager.Instance.Font.Load("tetris", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "Tetris.ttf"));
+            AssetManager.Instance.Font.Load("slkscr", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "slkscr.ttf"));
+            AssetManager.Instance.Font.Load("arial", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "arial.ttf"));
         }
 
         protected override void Initialize()
@@ -78,55 +93,50 @@ namespace Spacetris
                     _world.DrawAllLayers(Window);
                     break;
                 case SpacetrisGameState.Menu:
-                    _menu.DrawBackground(Window);
-                    if (_world.WorldState == WorldState.Pause)
-                    {
-                        _world.DrawWorld(Window, false, 15);
-                    }
-                    _menu.DrawMenu(Window);
+                    _menu.DrawAllLayers(Window, _world);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        protected override void KeyPressed(object sender, KeyEventArgs e)
-        {
-            switch (_gameState)
-            {
-                case SpacetrisGameState.Game:
-                    _world.KeyPressed(Window, sender, e);
-                    break;
-                case SpacetrisGameState.Menu:
-                    _menu.KeyPressed(Window, sender, e);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        protected override void KeyPressed(object sender, KeyEventArgs e) => GetGameInput().KeyPressed(Window, sender, e);
 
-        protected override void KeyReleased(object sender, KeyEventArgs e) => _world.KeyReleased(Window, sender, e);
+        protected override void KeyReleased(object sender, KeyEventArgs e) => GetGameInput().KeyReleased(Window, sender, e);
 
-        protected override void JoystickConnected(object sender, JoystickConnectEventArgs arg) => _world.JoystickConnected(sender, arg);
+        protected override void JoystickConnected(object sender, JoystickConnectEventArgs arg) => GetGameInput().JoystickConnected(sender, arg);
 
-        protected override void JoystickDisconnected(object sender, JoystickConnectEventArgs arg) => _world.JoystickDisconnected(sender, arg);
+        protected override void JoystickDisconnected(object sender, JoystickConnectEventArgs arg) => GetGameInput().JoystickDisconnected(sender, arg);
 
-        protected override void JoystickButtonPressed(object sender, JoystickButtonEventArgs arg) => _world.JoystickButtonPressed(Window, sender, arg);
+        protected override void JoystickButtonPressed(object sender, JoystickButtonEventArgs arg) => GetGameInput().JoystickButtonPressed(Window, sender, arg);
 
-        protected override void JoystickButtonReleased(object sender, JoystickButtonEventArgs arg) => _world.JoystickButtonReleased(Window, sender, arg);
+        protected override void JoystickButtonReleased(object sender, JoystickButtonEventArgs arg) => GetGameInput().JoystickButtonReleased(Window, sender, arg);
 
-        protected override void JoystickMoved(object sender, JoystickMoveEventArgs arg) => _world.JoystickMoved(Window, sender, arg);
+        protected override void JoystickMoved(object sender, JoystickMoveEventArgs arg) => GetGameInput().JoystickMoved(Window, sender, arg);
 
         protected override void Quit()
         {
 #if DEBUG
-            Console.WriteLine("Quit Game :(");
+            "Quit Game :(".Log();
 #endif
         }
 
         protected override void Resize(uint width, uint height)
         {
 
+        }
+
+        private IGameInput GetGameInput()
+        {
+            switch (_gameState)
+            {
+                case SpacetrisGameState.Game:
+                    return _world;
+                case SpacetrisGameState.Menu:
+                    return _menu;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void MenuItemSelected(object sender, MenuItemType e)
@@ -158,12 +168,12 @@ namespace Spacetris
             switch (e)
             {
                 case WorldState.Quit:
-                    Console.WriteLine("Game Over");
+                    "Game Over".Log();
                     _menu.EnableMenuItem(MenuItemType.Continue, false, false);
                     _gameState = SpacetrisGameState.Menu;
                     break;
                 case WorldState.Pause:
-                    Console.WriteLine("Pause");
+                    "Pause".Log();
                     _menu.EnableMenuItem(MenuItemType.Continue, true);
                     _gameState = SpacetrisGameState.Menu;
                     break;

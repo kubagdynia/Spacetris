@@ -1,10 +1,10 @@
 ﻿using SFML.Graphics;
-using SFML.Window;
+using Spacetris.GameStates.Worlds;
 using System;
 
 namespace Spacetris.GameStates.Menu
 {
-    public interface IMenu
+    public interface IMenu : IGameInput
     {
         event EventHandler<MenuItemType> MenuItemSelected;
 
@@ -14,12 +14,14 @@ namespace Spacetris.GameStates.Menu
 
         void DrawMenu(RenderWindow target);
 
+        void DrawGameController(RenderWindow target);
+
+        void DrawControls(RenderWindow target);
+
+        void DrawAllLayers(RenderWindow target, IWorld world);
+
         void Update(RenderWindow target, float deltaTime);
 
         bool EnableMenuItem(MenuItemType menuItem, bool enable, bool select = true);
-
-        void KeyPressed(RenderWindow target, object sender, KeyEventArgs e);
-
-        void KeyReleased(RenderWindow target, object sender, KeyEventArgs e);
     }
 }
