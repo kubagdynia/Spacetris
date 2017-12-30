@@ -5,6 +5,8 @@ Videos
 ------------
 ![Screenshot 1](https://github.com/kubagdynia/Spacetris/blob/develop/doc/spacetris_vid.gif)
 
+[Click to play on YouTube](https://youtu.be/LE38KHbw4Uk)
+
 Music
 ------------
 "Happy 8bit Loop 01" by Tristan Lohengrin : http://tristanlohengrin.wixsite.com/studio
