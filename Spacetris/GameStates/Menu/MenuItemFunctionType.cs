@@ -4,6 +4,7 @@
     {
         None,
         YesNo,
+        YesNoVolume,
         CustomPage
     }
 }

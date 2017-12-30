@@ -6,7 +6,7 @@ namespace Spacetris.Extensions
 {
     public static class SfmlGraphicsExtension
     {
-        public static void Center(this Text text, float x, float y)
+        public static Vector2f Center(this Text text, float x, float y)
         {
             FloatRect textRect = text.GetLocalBounds();
 
@@ -15,6 +15,8 @@ namespace Spacetris.Extensions
                 textRect.Top + textRect.Height / 2.0f);
 
             text.Position = new Vector2f(x, y);
+
+            return new Vector2f(textRect.Width, textRect.Height);
         }
 
         public static Text Shadow(this Text text, int offset = 2, bool center = true)

@@ -19,7 +19,7 @@ namespace Spacetris.GameStates.Worlds
         private Timer _timer;
         private int _tickTimer;
 
-        public Sprite GameController;
+        public Sprite GameControllerSprite;
 
         public Sound GameSoundMoveTetromino;
         public Sound GameSoundDropTetromino;
@@ -68,9 +68,9 @@ namespace Spacetris.GameStates.Worlds
 
         protected abstract string BlocksTexturePath { get; }
 
-        protected abstract string FontName { get; }
+        protected abstract AssetManagerItemName FontName { get; }
 
-        protected abstract string CounterFontName { get; }
+        protected abstract AssetManagerItemName CounterFontName { get; }
 
         private bool _readyForRotate = true;
 
@@ -270,7 +270,7 @@ namespace Spacetris.GameStates.Worlds
             Color scoreColor = new Color(255, 255, 255, 189);
 
             // Top 5 scores
-            if (GameSettings.IsEnoughPointsForTop5(GameState.Score))
+            if (GameSettings.IsEnoughPointsForTopScores(GameState.Score))
             {
                 DrawText(target, Font, "Congratulations!", 470, 280, scoreColor, 30, true, true);
                 DrawText(target, Font, "Great Score", 470, 320, scoreColor, 30, true, true);
@@ -690,7 +690,7 @@ namespace Spacetris.GameStates.Worlds
                 {
                     WorldState = WorldState.Quit;
                 }
-                else if (GameSettings.IsEnoughPointsForTop5(GameState.Score))
+                else if (GameSettings.IsEnoughPointsForTopScores(GameState.Score))
                 {
                     if (AllowedKeyboardChars.ContainsKey(e.Code) && _userName.Length < 20)
                     {
@@ -776,24 +776,23 @@ namespace Spacetris.GameStates.Worlds
 
         public virtual void JoystickConnected(object sender, JoystickConnectEventArgs arg)
         {
-            #if DEBUG
+#if DEBUG
             $"Controller connected: {arg.JoystickId}".Log();
-            #endif
+#endif
         }
 
         public virtual void JoystickDisconnected(object sender, JoystickConnectEventArgs arg)
         {
-            #if DEBUG
+#if DEBUG
             $"Controller disconnected: {arg.JoystickId}".Log();
-            #endif
+#endif
         }
 
         public virtual void JoystickButtonPressed(RenderWindow target, object sender, JoystickButtonEventArgs arg)
         {
-            #if DEBUG
+#if DEBUG
             $"Controller ({arg.JoystickId}) Button Pressed: {arg.Button})".Log();
-            #endif
-
+#endif
             if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
             {
                 WorldState = WorldState.Playing;
@@ -819,17 +818,16 @@ namespace Spacetris.GameStates.Worlds
 
         public virtual void JoystickButtonReleased(RenderWindow target, object sender, JoystickButtonEventArgs arg)
         {
-            #if DEBUG
+#if DEBUG
             $"Controller ({arg.JoystickId}) Button Released: {arg.Button})".Log();
-            #endif
+#endif
         }
 
         public virtual void JoystickMoved(RenderWindow target, object sender, JoystickMoveEventArgs arg)
         {
-            #if DEBUG
+#if DEBUG
             $"Controller ({arg.JoystickId}) Moved: Axis({arg.Axis}), Position({arg.Position})".Log();
-            #endif
-
+#endif
             if (arg.Axis == Joystick.Axis.PovX || arg.Axis == Joystick.Axis.PovY)
             {
                 if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
@@ -837,22 +835,22 @@ namespace Spacetris.GameStates.Worlds
                     WorldState = WorldState.Playing;
                 }
 
-                if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
+                if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, -1);
                 }
-                else if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
+                else if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 1);
                 }
-                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputThreshold)
+                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 0, 1);
                 }
-                else if (_readyForRotate && arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputThreshold)
+                else if (_readyForRotate && arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance)
                 {
                     _readyForRotate = false;
                     if (RotateTetromino())
@@ -860,7 +858,7 @@ namespace Spacetris.GameStates.Worlds
                         PlaySound(GameSoundMoveTetromino);
                     }
                 }
-                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < GamepadMinimumInputThreshold)
+                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < GamepadMinimumInputTolerance)
                 {
                     _readyForRotate = true;
                 }
@@ -869,7 +867,7 @@ namespace Spacetris.GameStates.Worlds
 
         public virtual void DrawGameController(RenderWindow target)
         {
-            target.Draw(GameController);
+            target.Draw(GameControllerSprite);
         }
 
         /// <summary>
@@ -978,8 +976,9 @@ namespace Spacetris.GameStates.Worlds
 
         private void Tick(object state)
         {
+#if DEBUG
             "Counter Tick".Log();
-
+#endif
             if (--_tickTimer == 0)
             {
                 WorldState = WorldState.Playing;

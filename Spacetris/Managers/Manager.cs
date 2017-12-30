@@ -22,9 +22,15 @@ namespace Spacetris.Managers
 
         public T Load(string name, string filename) => Load(name, filename, false);
 
+        public T Load(AssetManagerItemName name, string filename) => Load(name.ToString(), filename);
+
         public T Load(string name, string filename, bool overrideItem) => Load(name, filename, overrideItem, null);
 
+        public T Load(AssetManagerItemName name, string filename, bool overrideItem) => Load(name.ToString(), filename, overrideItem);
+
         public T Load(string name, string filename, object parent) => Load(name, filename, false, parent);
+
+        public T Load(AssetManagerItemName name, string filename, object parent) => Load(name.ToString(), filename, parent);
 
         public T Load(string name, string filename, bool overrideItem, object parent)
         {
@@ -59,7 +65,11 @@ namespace Spacetris.Managers
             return instance;
         }
 
+        public T Load(AssetManagerItemName name, string filename, bool overrideItem, object parent) => Load(name.ToString(), filename, overrideItem, parent);
+
         public void Remove(string name) => Remove(name, null);
+
+        public void Remove(AssetManagerItemName name) => Remove(name.ToString());
 
         public void Remove(string name, object parent)
         {
@@ -72,6 +82,8 @@ namespace Spacetris.Managers
             Items.RemoveAll(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && c.Parent.Equals(parent));
         }
 
+        public void Remove(AssetManagerItemName name, object parent) => Remove(name.ToString(), parent);
+
         public void RemoveAll() => Items.Clear();
 
         public void RemoveParent(object parent)
@@ -80,6 +92,8 @@ namespace Spacetris.Managers
         }
 
         public bool Exists(string name) => Exists(name, null);
+
+        public bool Exists(AssetManagerItemName name) => Exists(name.ToString());
 
         public bool Exists(string name, object parent)
         {
@@ -91,7 +105,11 @@ namespace Spacetris.Managers
             return !string.IsNullOrWhiteSpace(name) && Items.Any(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && c.Parent.Equals(parent));
         }
 
+        public bool Exists(AssetManagerItemName name, object parent) => Exists(name.ToString(), parent);
+
         public T Get(string name) => Get(name, null);
+
+        public T Get(AssetManagerItemName name) => Get(name.ToString());
 
         public T Get(string name, object parent)
         {
@@ -108,6 +126,8 @@ namespace Spacetris.Managers
             return Items.SingleOrDefault(c =>
                 c.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && c.Parent.Equals(parent))?.Resource;
         }
+
+        public T Get(AssetManagerItemName name, object parent) => Get(name.ToString(), parent);
 
         public Dictionary<object, List<T>> GetGroupedByParent() => GetGroupedByParent(null);
 

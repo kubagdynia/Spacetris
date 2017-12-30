@@ -33,29 +33,29 @@ namespace Spacetris
             GameSettings.Load();
 
             // Load music
-            AssetManager.Instance.Music.Load("music01", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, "music.ogg"));
+            AssetManager.Instance.Music.Load(AssetManagerItemName.Music01, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.MusicPath, "music.ogg"));
 
             // Load textures
-            AssetManager.Instance.Texture.Load("gamepad", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "gamepad.png"));
-            AssetManager.Instance.Texture.Load("controls", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "controls.png"));
+            AssetManager.Instance.Texture.Load(AssetManagerItemName.GamepadTexture, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "gamepad.png"));
+            AssetManager.Instance.Texture.Load(AssetManagerItemName.ControlsTexture, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.ImagesPath, "controls.png"));
 
             // Load fonts
-            AssetManager.Instance.Font.Load("tetris", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "Tetris.ttf"));
-            AssetManager.Instance.Font.Load("slkscr", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "slkscr.ttf"));
-            AssetManager.Instance.Font.Load("arial", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "arial.ttf"));
+            AssetManager.Instance.Font.Load(AssetManagerItemName.TetrisFont, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "Tetris.ttf"));
+            AssetManager.Instance.Font.Load(AssetManagerItemName.SlkscrFont, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "slkscr.ttf"));
+            AssetManager.Instance.Font.Load(AssetManagerItemName.ArialFont, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GameSettings.FontsPath, "arial.ttf"));
         }
 
         protected override void Initialize()
         {
             _gameState = SpacetrisGameState.Menu;
 
-            _world = new World01();
-            _world.WorldStateChanged += PlayFieldStateChanged;
-            _world.Initialize(Window);
-
             _menu = new Menu();
             _menu.MenuItemSelected += MenuItemSelected;
             _menu.Initialize(Window);
+
+            _world = new World01();
+            _world.WorldStateChanged += PlayFieldStateChanged;
+            _world.Initialize(Window);
 
             _world.CreateNewTetromino();
         }
@@ -116,6 +116,7 @@ namespace Spacetris
 
         protected override void Quit()
         {
+            GameSettings.CleanUp();
 #if DEBUG
             "Quit Game :(".Log();
 #endif
@@ -168,12 +169,16 @@ namespace Spacetris
             switch (e)
             {
                 case WorldState.Quit:
+#if DEBUG
                     "Game Over".Log();
+#endif
                     _menu.EnableMenuItem(MenuItemType.Continue, false, false);
                     _gameState = SpacetrisGameState.Menu;
                     break;
                 case WorldState.Pause:
+#if DEBUG
                     "Pause".Log();
+#endif
                     _menu.EnableMenuItem(MenuItemType.Continue, true);
                     _gameState = SpacetrisGameState.Menu;
                     break;
