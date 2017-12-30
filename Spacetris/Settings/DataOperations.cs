@@ -31,17 +31,16 @@ namespace Spacetris.Settings
             {
                 File.WriteAllBytes(tempPath, jsonByte);
 
-                #if DEBUG
+#if DEBUG
                 $"Saved Data to: {tempPath}".Log();
-                #endif
+#endif
             }
             catch (Exception e)
             {
-                #if DEBUG
+#if DEBUG
                 $"Failed to save data to: {tempPath}".Log();
                 $"Error: {e.Message}".Log();
-                #endif
-
+#endif
                 throw;
             }
         }
@@ -60,20 +59,18 @@ namespace Spacetris.Settings
             // Exit if Directory does not exist
             if (!Directory.Exists(Path.GetDirectoryName(tempPath)))
             {
-                #if DEBUG
+#if DEBUG
                 "Directory does not exist".Log();
-                #endif
-
+#endif
                 return default(T);
             }
 
             // Exit if File does not exist
             if (!File.Exists(tempPath))
             {
-                #if DEBUG
+#if DEBUG
                 "File does not exist".Log();
-                #endif
-
+#endif
                 return default(T);
             }
 
@@ -85,17 +82,16 @@ namespace Spacetris.Settings
             {
                 jsonByte = File.ReadAllBytes(tempPath);
                 
-                #if DEBUG
+#if DEBUG
                 $"Loaded data from: {tempPath}".Log();
-                #endif
+#endif
             }
             catch (Exception e)
             {
-                #if DEBUG
+#if DEBUG
                 $"Failed to load data from: {tempPath}".Log();
                 $"Error: {e.Message}".Log();
-                #endif
-
+#endif
                 throw;
             }
 

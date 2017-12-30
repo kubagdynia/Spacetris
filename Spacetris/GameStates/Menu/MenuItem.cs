@@ -12,10 +12,10 @@ namespace Spacetris.GameStates.Menu
         public MenuItem[] SubMenuItems { get; set; }
         public MenuItemType Parent { get; }
         public MenuItemFunctionType FunctionType { get; }
-        public readonly Func<object, object> FunctionObject;
+        public readonly Func<object, object, object> FunctionObject;
 
         public MenuItem(string name, MenuItemType item, int y, int position, bool enable = true,
-            MenuItemType parent = MenuItemType.None, MenuItemFunctionType functionType = MenuItemFunctionType.None, Func<object, object> functionObject = null)
+            MenuItemType parent = MenuItemType.None, MenuItemFunctionType functionType = MenuItemFunctionType.None, Func<object, object, object> functionObject = null)
         {
             Name = name;
             Item = item;
@@ -39,7 +39,7 @@ namespace Spacetris.GameStates.Menu
 
         }
 
-        public MenuItem(MenuItemType item, int y, int position, MenuItemType parent, MenuItemFunctionType functionType, Func<object, object> functionObject)
+        public MenuItem(MenuItemType item, int y, int position, MenuItemType parent, MenuItemFunctionType functionType, Func<object, object, object> functionObject)
             : this(item.ToString(), item, y, position, true, parent, functionType, functionObject)
         {
 

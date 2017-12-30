@@ -1,6 +1,7 @@
 ﻿using SFML.Graphics;
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
+using Spacetris.Managers;
 using Spacetris.Settings;
 using System.IO;
 
@@ -23,9 +24,9 @@ namespace Spacetris.GameStates.Worlds
 
         protected override string BlocksTexturePath => Path.Combine(GameSettings.TilesetsPath, "tilesets.png");
 
-        protected override string FontName => "arial";
+        protected override AssetManagerItemName FontName => AssetManagerItemName.ArialFont;
 
-        protected override string CounterFontName => "tetris";
+        protected override AssetManagerItemName CounterFontName => AssetManagerItemName.TetrisFont;
 
         public override void DrawScore(RenderWindow target, int x, int y, byte alpha = 255)
         {
@@ -77,7 +78,7 @@ namespace Spacetris.GameStates.Worlds
             GameSoundLevelUp = LoadSound("levelup.ogg");
 
             // Load sprites
-            GameController = LoadGameControllerSprite();
+            GameControllerSprite = LoadGameControllerSprite();
         }
     }
 }

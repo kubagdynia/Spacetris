@@ -15,7 +15,7 @@ namespace Spacetris.GameStates
     public abstract class BaseGameState
     {
         // 
-        protected const double GamepadMinimumInputThreshold = 0.0000001;
+        protected const double GamepadMinimumInputTolerance = 0.0000001;
 
         protected static readonly Dictionary<Keyboard.Key, string> AllowedKeyboardChars = new Dictionary<Keyboard.Key, string>
         {
@@ -139,12 +139,17 @@ namespace Spacetris.GameStates
                 return;
             }
 
+            if (sound.Volume != GameSettings.SoundVolume)
+            {
+                sound.Volume = GameSettings.SoundVolume;
+            }
+
             sound.Play();
         }
 
         protected static Sprite LoadGameControllerSprite()
         {
-            Sprite sprite = LoadSprite(AssetManager.Instance.Texture.Get("gamepad"), new Point2(20, 20));
+            Sprite sprite = LoadSprite(AssetManager.Instance.Texture.Get(AssetManagerItemName.GamepadTexture), new Point2(20, 20));
             sprite.Color = new Color(255, 255, 255, 50);
 
             return sprite;
@@ -152,7 +157,7 @@ namespace Spacetris.GameStates
 
         protected static Sprite LoadControlsControllerSprite()
         {
-            Sprite sprite = LoadSprite(AssetManager.Instance.Texture.Get("controls"), new Point2(700, 350));
+            Sprite sprite = LoadSprite(AssetManager.Instance.Texture.Get(AssetManagerItemName.ControlsTexture), new Point2(700, 350));
             sprite.Color = new Color(255, 255, 255, 100);
 
             return sprite;
