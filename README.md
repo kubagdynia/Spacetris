@@ -26,5 +26,5 @@ If you want to run it from the console go to "Spacetris\Spacetris" and type
 ### Builds
 | Branch       | Status      |
 |--------------|-------------|
-| master       | ![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=master) |
-| develop      | ![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=develop)|
+| [master](https://travis-ci.org/kubagdynia/Spacetris/branches)       | [![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=master)](https://travis-ci.org/kubagdynia/Spacetris)|
+| [develop](https://travis-ci.org/kubagdynia/Spacetris/branches)      | [![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=develop)](https://travis-ci.org/kubagdynia/Spacetris)|
