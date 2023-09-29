@@ -1,9 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spacetris", "Spacetris\Spacetris.csproj", "{9D0307EF-6CE3-47AA-A82D-C08C573A1A4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spacetris", "Spacetris\Spacetris.csproj", "{1812905C-3BDF-4891-9EB3-8C655FA37B89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9D0307EF-6CE3-47AA-A82D-C08C573A1A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D0307EF-6CE3-47AA-A82D-C08C573A1A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D0307EF-6CE3-47AA-A82D-C08C573A1A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D0307EF-6CE3-47AA-A82D-C08C573A1A4A}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1A13529C-9DA3-4118-A01C-494FCE6A7580}
+		{1812905C-3BDF-4891-9EB3-8C655FA37B89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1812905C-3BDF-4891-9EB3-8C655FA37B89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1812905C-3BDF-4891-9EB3-8C655FA37B89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1812905C-3BDF-4891-9EB3-8C655FA37B89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

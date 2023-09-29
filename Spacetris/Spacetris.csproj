@@ -1,37 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-  </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="SFML.Net" Version="2.5.1" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="sfmlnet-audio-2">
-      <HintPath>..\ExtLibs\SFML.Net\lib-x64\sfmlnet-audio-2.dll</HintPath>
-    </Reference>
-    <Reference Include="sfmlnet-graphics-2">
-      <HintPath>..\ExtLibs\SFML.Net\lib-x64\sfmlnet-graphics-2.dll</HintPath>
-    </Reference>
-    <Reference Include="sfmlnet-system-2">
-      <HintPath>..\ExtLibs\SFML.Net\lib-x64\sfmlnet-system-2.dll</HintPath>
-    </Reference>
-    <Reference Include="sfmlnet-window-2">
-      <HintPath>..\ExtLibs\SFML.Net\lib-x64\sfmlnet-window-2.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+    <ItemGroup>
+        <ContentFiles Include="..\Content\**\*.*" />
+    </ItemGroup>
 
-  <ItemGroup>  
-    <ContentFiles Include="..\Content\**\*.*" />
-    <CSFMLFiles Include="..\ExtLibs\SFML.Net\extlibs\lib-x64\*.*" />
-  </ItemGroup>  
-
-  <Target Name="CopyFiles" AfterTargets="AfterBuild">  
-    <Copy SourceFiles="@(ContentFiles)" DestinationFolder="$(OutDir)\Content\%(RecursiveDir)" SkipUnchangedFiles="true" />  
-    <Copy SourceFiles="@(CSFMLFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
-  </Target>
+    <Target Name="CopyFiles" AfterTargets="AfterBuild">
+        <Copy SourceFiles="@(ContentFiles)" DestinationFolder="$(OutDir)\Content\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    </Target>
 
 </Project>

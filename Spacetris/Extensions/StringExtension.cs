@@ -1,12 +1,9 @@
-﻿using System;
+namespace Spacetris.Extensions;
 
-namespace Spacetris.Extensions
+public static class StringExtension
 {
-    public static class StringExtension
+    public static void Log(this string str)
     {
-        public static void Log(this string str)
-        {
-            Console.WriteLine(str);
-        }
+        Console.WriteLine(str);
     }
 }

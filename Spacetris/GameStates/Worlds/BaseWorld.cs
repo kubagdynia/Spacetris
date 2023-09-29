@@ -1,4 +1,4 @@
-﻿using SFML.Audio;
+using SFML.Audio;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -6,14 +6,12 @@ using Spacetris.DataStructures;
 using Spacetris.Extensions;
 using Spacetris.Managers;
 using Spacetris.Settings;
-using System;
-using System.Threading;
 
-namespace Spacetris.GameStates.Worlds
+namespace Spacetris.GameStates.Worlds;
+
+public abstract class BaseWorld : BaseGameState, IWorld
 {
-    public abstract class BaseWorld : BaseGameState, IWorld
-    {
-        private string _userName;
+    private string _userName;
         private bool _isKeyDownEnabled = true;
 
         private Timer _timer;
@@ -985,5 +983,4 @@ namespace Spacetris.GameStates.Worlds
                 _timer.Dispose();
             }
         }
-    }
 }
