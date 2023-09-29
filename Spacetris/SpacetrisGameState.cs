@@ -1,8 +1,7 @@
-﻿namespace Spacetris
+namespace Spacetris;
+
+public enum SpacetrisGameState
 {
-    enum SpacetrisGameState
-    {
-        Menu,
-        Game
-    }
+    Menu,
+    Game
 }

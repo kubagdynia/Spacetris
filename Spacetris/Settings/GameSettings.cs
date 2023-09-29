@@ -1,13 +1,10 @@
-﻿using Spacetris.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Spacetris.Extensions;
 
-namespace Spacetris.Settings
+namespace Spacetris.Settings;
+
+public static class GameSettings
 {
-    public static class GameSettings
-    {
-        public static event EventHandler<SettingsPropertyType> GameSettingsChanged;
+    public static event EventHandler<SettingsPropertyType> GameSettingsChanged;
 
         private const int TopScores = 5;
 
@@ -245,5 +242,4 @@ namespace Spacetris.Settings
         {
             _settingsShouldBeSaved = true;
         }
-    }
 }

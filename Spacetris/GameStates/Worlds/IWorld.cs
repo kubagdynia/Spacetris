@@ -1,13 +1,11 @@
-﻿using SFML.Graphics;
-using SFML.Window;
+using SFML.Graphics;
 using Spacetris.DataStructures;
-using System;
 
-namespace Spacetris.GameStates.Worlds
+namespace Spacetris.GameStates.Worlds;
+
+public interface IWorld : IGameInput
 {
-    public interface IWorld : IGameInput
-    {
-        event EventHandler<WorldState> WorldStateChanged;
+    event EventHandler<WorldState> WorldStateChanged;
 
         WorldState WorldState { get; set; }
 
@@ -92,5 +90,4 @@ namespace Spacetris.GameStates.Worlds
         bool CreateNewTetromino(int tetrominoNumber, int tetrominoRotationStateNumber, bool setDefaultStartPosition = true);
 
         void ClearWorld();
-    }
 }

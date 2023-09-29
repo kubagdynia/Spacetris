@@ -1,20 +1,19 @@
-﻿namespace Spacetris.GameStates.Menu
+namespace Spacetris.GameStates.Menu;
+
+public enum MenuItemType
 {
-    public enum MenuItemType
-    {
-        None,
+    None,
 
-        NewGane,
-        Continue,
-        Scores,
-        Config,
-        Quit,
+    NewGane,
+    Continue,
+    Scores,
+    Config,
+    Quit,
 
-        ScoresDetails,
+    ScoresDetails,
 
-        Sound,
-        Music,
+    Sound,
+    Music,
 
-        Back
-    }
+    Back
 }

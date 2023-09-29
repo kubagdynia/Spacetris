@@ -1,4 +1,4 @@
-﻿using SFML.Audio;
+using SFML.Audio;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -6,16 +6,12 @@ using Spacetris.DataStructures;
 using Spacetris.Extensions;
 using Spacetris.Managers;
 using Spacetris.Settings;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
-namespace Spacetris.GameStates
+namespace Spacetris.GameStates;
+
+public abstract class BaseGameState
 {
-    public abstract class BaseGameState
-    {
-        // 
-        protected const double GamepadMinimumInputTolerance = 0.0000001;
+    protected const double GamepadMinimumInputTolerance = 0.0000001;
 
         protected static readonly Dictionary<Keyboard.Key, string> AllowedKeyboardChars = new Dictionary<Keyboard.Key, string>
         {
@@ -57,7 +53,7 @@ namespace Spacetris.GameStates
             { Keyboard.Key.Num9, "9" },
             { Keyboard.Key.Space, " " },
             { Keyboard.Key.Slash, "/" },
-            { Keyboard.Key.Dash, "-" }
+            { Keyboard.Key.Hyphen, "-" }
         };
 
         public BaseGameState()
@@ -164,5 +160,4 @@ namespace Spacetris.GameStates
         }
 
         protected abstract void LoadContent();
-    }
 }

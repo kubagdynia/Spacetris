@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using SFML.Audio;
 using SFML.Graphics;
-using SFML.Window;
 using SFML.System;
+using SFML.Window;
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
-using Spacetris.Settings;
-using SFML.Audio;
 using Spacetris.Extensions;
-using Spacetris.Managers;
 using Spacetris.GameStates.Worlds;
+using Spacetris.Managers;
+using Spacetris.Settings;
 
-namespace Spacetris.GameStates.Menu
+namespace Spacetris.GameStates.Menu;
+
+public class Menu : BaseGameState, IMenu
 {
-    public class Menu : BaseGameState, IMenu
-    {
-        private const string GameName = "Spacetris";
+    private const string GameName = "Spacetris";
 
         private const int YesNoVolumeStep = 2;
 
@@ -747,5 +744,4 @@ namespace Spacetris.GameStates.Menu
                     throw new ArgumentOutOfRangeException();
             }
         }
-    }
 }

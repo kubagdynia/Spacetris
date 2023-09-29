@@ -1,5 +1,3 @@
-﻿using System;
-using System.IO;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -10,25 +8,25 @@ using Spacetris.GameStates.Worlds;
 using Spacetris.Managers;
 using Spacetris.Settings;
 
-namespace Spacetris
+namespace Spacetris;
+
+public class SpacetrisGame : Game
 {
-    public class SpacetrisGame : Game
+    private SpacetrisGameState _gameState;
+    
+    private float _totalTickTimer;
+
+    private IWorld _world;
+
+    private IMenu _menu;
+    
+    public SpacetrisGame()
+        : base(new Vector2u(960, 540), "Spacetris", Color.Black)
     {
-        private SpacetrisGameState _gameState;
 
-        private float _totalTickTimer;
-
-        private IWorld _world;
-
-        private IMenu _menu;
-
-        public SpacetrisGame()
-            : base(new Vector2u(960, 540), "Spacetris", Color.Black)
-        {
-
-        }
-
-        protected override void LoadContent()
+    }
+    
+    protected override void LoadContent()
         {
             GameSettings.Load();
 
@@ -184,5 +182,5 @@ namespace Spacetris
                     break;
             }
         }
-    }
+    
 }

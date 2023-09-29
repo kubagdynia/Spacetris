@@ -1,11 +1,6 @@
-﻿namespace Spacetris
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            var spacetrisGame = new SpacetrisGame();
-            spacetrisGame.Run();
-        }
-    }
-}
+﻿// See https://aka.ms/new-console-template for more information
+
+using Spacetris;
+
+var spacetrisGame = new SpacetrisGame();
+spacetrisGame.Run();

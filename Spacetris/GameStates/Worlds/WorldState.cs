@@ -1,12 +1,11 @@
-﻿namespace Spacetris.GameStates.Worlds
+namespace Spacetris.GameStates.Worlds;
+
+public enum WorldState
 {
-    public enum WorldState
-    {
-        NewGame,
-        Playing,
-        Pause,
-        Continue,
-        GameOver,
-        Quit
-    }
+    NewGame,
+    Playing,
+    Pause,
+    Continue,
+    GameOver,
+    Quit
 }

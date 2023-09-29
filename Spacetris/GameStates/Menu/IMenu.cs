@@ -1,27 +1,25 @@
-﻿using SFML.Graphics;
+using SFML.Graphics;
 using Spacetris.GameStates.Worlds;
-using System;
 
-namespace Spacetris.GameStates.Menu
+namespace Spacetris.GameStates.Menu;
+
+public interface IMenu : IGameInput
 {
-    public interface IMenu : IGameInput
-    {
-        event EventHandler<MenuItemType> MenuItemSelected;
+    event EventHandler<MenuItemType> MenuItemSelected;
 
-        void Initialize(RenderWindow target);
+    void Initialize(RenderWindow target);
 
-        void DrawBackground(RenderWindow target);
+    void DrawBackground(RenderWindow target);
 
-        void DrawMenu(RenderWindow target);
+    void DrawMenu(RenderWindow target);
 
-        void DrawGameController(RenderWindow target);
+    void DrawGameController(RenderWindow target);
 
-        void DrawControls(RenderWindow target);
+    void DrawControls(RenderWindow target);
 
-        void DrawAllLayers(RenderWindow target, IWorld world);
+    void DrawAllLayers(RenderWindow target, IWorld world);
 
-        void Update(RenderWindow target, float deltaTime);
+    void Update(RenderWindow target, float deltaTime);
 
-        bool EnableMenuItem(MenuItemType menuItem, bool enable, bool select = true);
-    }
+    bool EnableMenuItem(MenuItemType menuItem, bool enable, bool select = true);
 }
