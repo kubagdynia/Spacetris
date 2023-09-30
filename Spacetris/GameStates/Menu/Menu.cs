@@ -68,11 +68,10 @@ public class Menu : BaseGameState, IMenu
 
         private static Font MadeByFont => AssetManager.Instance.Font.Get(AssetManagerItemName.ArialFont);
 
-        private readonly MenuItem[] _menuItems = new MenuItem[]
-        {
-            new MenuItem(MenuItemType.NewGane, 0, 1),
-            new MenuItem(MenuItemType.Continue, 0, 2, false),
-            new MenuItem("High Scores", MenuItemType.Scores, 0, 3)
+        private readonly MenuItem[] _menuItems = {
+            new(MenuItemType.NewGane, 0, 1),
+            new(MenuItemType.Continue, 0, 2, false),
+            new("High Scores", MenuItemType.Scores, 0, 3)
             {
                 SubMenuItems = new[]
                 {
@@ -80,7 +79,7 @@ public class Menu : BaseGameState, IMenu
                     new MenuItem(MenuItemType.Back, 200, 2, MenuItemType.Scores),
                 }
             },
-            new MenuItem(MenuItemType.Config, 0, 4)
+            new(MenuItemType.Config, 0, 4)
             {
                 SubMenuItems = new[]
                 {
@@ -89,7 +88,7 @@ public class Menu : BaseGameState, IMenu
                     new MenuItem(MenuItemType.Back, 0, 3, MenuItemType.Config),
                 }
             },
-            new MenuItem(MenuItemType.Quit, 0, 5)
+            new(MenuItemType.Quit, 0, 5)
         };
 
         public Menu()
@@ -377,7 +376,7 @@ public class Menu : BaseGameState, IMenu
             {
                 _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), YesNoVolumeStep);
             }
-            else if (e.Code == Keyboard.Key.Return)
+            else if (e.Code == Keyboard.Key.Enter)
             {
                 if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
                 {
@@ -559,9 +558,9 @@ public class Menu : BaseGameState, IMenu
 
         private static Func<object, object, object> ScoresCustomSection()
         {
-            return (arg1, arg2) =>
+            return (arg1, _) =>
             {
-                if (!(arg1 is RenderTarget target))
+                if (arg1 is not RenderTarget target)
                 {
                     return null;
                 }

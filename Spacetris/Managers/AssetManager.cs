@@ -6,7 +6,7 @@ namespace Spacetris.Managers;
 public class AssetManager
 {
     private static AssetManager _instance;
-    private static readonly object Sync = new object();
+    private static readonly object Sync = new();
 
     #region SINGLETON
 
@@ -23,7 +23,7 @@ public class AssetManager
                     if (_instance == null)
                     {
                         var instance = new AssetManager();
-                        System.Threading.Thread.MemoryBarrier();
+                        Thread.MemoryBarrier();
                         _instance = instance;
                     }
                 }
@@ -36,17 +36,17 @@ public class AssetManager
 
     private Manager<Texture> _texture;
 
-    public Manager<Texture> Texture => _texture ?? (_texture = new Manager<Texture>());
+    public Manager<Texture> Texture => _texture ??= new Manager<Texture>();
 
     private Manager<Font> _font;
 
-    public Manager<Font> Font => _font ?? (_font = new Manager<Font>());
+    public Manager<Font> Font => _font ??= new Manager<Font>();
 
     private Manager<Music> _music;
 
-    public Manager<Music> Music => _music ?? (_music = new Manager<Music>());
+    public Manager<Music> Music => _music ??= new Manager<Music>();
 
     private Manager<SoundBuffer> _sound;
 
-    public Manager<SoundBuffer> Sound => _sound ?? (_sound = new Manager<SoundBuffer>());
+    public Manager<SoundBuffer> Sound => _sound ??= new Manager<SoundBuffer>();
 }

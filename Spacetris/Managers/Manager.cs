@@ -2,7 +2,7 @@ namespace Spacetris.Managers;
 
 public class Manager<T> : IManager<T> where T : class
 {
-    private static List<ManagerItem<T>> _items;
+    private static List<ManagerItem<T>>? _items;
 
         private static List<ManagerItem<T>> Items
         {

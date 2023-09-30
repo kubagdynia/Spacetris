@@ -1,6 +1,3 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Spacetris;
 
-using Spacetris;
-
-var spacetrisGame = new SpacetrisGame();
-spacetrisGame.Run();
+new SpacetrisGame().Run();
