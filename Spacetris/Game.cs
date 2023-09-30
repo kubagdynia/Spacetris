@@ -45,8 +45,8 @@ public abstract class Game
         }
 
         // Set up events
-        Window.Closed += (sender, arg) => Window.Close();
-        Window.Resized += (sender, arg) => Resize(arg.Width, arg.Height);
+        Window.Closed += (_, _) => Window.Close();
+        Window.Resized += (_, arg) => Resize(arg.Width, arg.Height);
         // Key
         Window.KeyPressed += KeyPressed;
         Window.KeyReleased += KeyReleased;

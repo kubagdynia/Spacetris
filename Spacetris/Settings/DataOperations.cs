@@ -22,7 +22,7 @@ public static class DataOperations
             // Create Directory if it does not exist
             if (!Directory.Exists(Path.GetDirectoryName(tempPath)))
             {
-                string? path = Path.GetDirectoryName(tempPath);
+                string path = Path.GetDirectoryName(tempPath);
                 if (path is not null)
                 {
                     Directory.CreateDirectory(path);
@@ -64,7 +64,7 @@ public static class DataOperations
 #if DEBUG
                 "Directory does not exist".Log();
 #endif
-                return default(T);
+                return default;
             }
 
             // Exit if File does not exist
@@ -73,7 +73,7 @@ public static class DataOperations
 #if DEBUG
                 "File does not exist".Log();
 #endif
-                return default(T);
+                return default;
             }
 
             fileExists = true;
@@ -101,13 +101,13 @@ public static class DataOperations
             string jsonData = Encoding.ASCII.GetString(jsonByte);
 
             // Convert to Object
-            object? resultValue = JsonSerializer.Deserialize<T>(jsonData);
+            object resultValue = JsonSerializer.Deserialize<T>(jsonData);
             if (resultValue is not null)
             {
                 return (T)Convert.ChangeType(resultValue, typeof(T));
             }
 
-            throw new ArgumentNullException("resultValue");
+            throw new ArgumentNullException(nameof(resultValue));
         }
 
         public static T LoadData<T>(string fileName) => LoadData<T>(fileName, out _);

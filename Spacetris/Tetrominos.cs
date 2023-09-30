@@ -36,8 +36,7 @@ public static class Tetrominos
     }
 
     private static readonly int[,,,] TetrominosList =
-        new int[NumberOfTetrominos, TetrominoRotationStates, TetrominoSize, TetrominoSize]  // [Tetromino, Rotate, Row, Column]
-    {
+        {
         // I-Block, light blue
         {
             {

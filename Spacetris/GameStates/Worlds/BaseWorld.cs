@@ -102,21 +102,9 @@ public abstract class BaseWorld : BaseGameState, IWorld
             }
         }
 
-        public Font Font
-        {
-            get
-            {
-                return AssetManager.Instance.Font.Get(FontName);
-            }
-        }
+        public Font Font => AssetManager.Instance.Font.Get(FontName);
 
-        public Font CounterFont
-        {
-            get
-            {
-                return AssetManager.Instance.Font.Get(CounterFontName);
-            }
-        }
+        public Font CounterFont => AssetManager.Instance.Font.Get(CounterFontName);
 
         private int[,] _world;
 
@@ -694,11 +682,11 @@ public abstract class BaseWorld : BaseGameState, IWorld
                     {
                         _userName += AllowedKeyboardChars[e.Code];
                     }
-                    else if (e.Code == Keyboard.Key.BackSpace && _userName.Length > 0)
+                    else if (e.Code == Keyboard.Key.Backspace && _userName.Length > 0)
                     {
                         _userName = _userName.Remove(_userName.Length - 1);
                     }
-                    else if (e.Code == Keyboard.Key.Return)
+                    else if (e.Code == Keyboard.Key.Enter)
                     {
                         GameSettings.AddScore(new ScoreLine(_userName, GameState.Lines, GameState.Level, GameState.Score));
                         WorldState = WorldState.Quit;
@@ -713,16 +701,16 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 }
                 WorldState = WorldState.Pause;
             }
-            else if ((_readyForRotate && (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)) ||
+            else if ((_readyForRotate && e.Code is Keyboard.Key.Up or Keyboard.Key.W) ||
                 e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.A || e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.D ||
-                e.Code == Keyboard.Key.Space || ((e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S) && _isKeyDownEnabled))
+                e.Code == Keyboard.Key.Space || (e.Code is Keyboard.Key.Down or Keyboard.Key.S && _isKeyDownEnabled))
             {
-                if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
+                if (WorldState is WorldState.NewGame or WorldState.Continue)
                 {
                     WorldState = WorldState.Playing;
                 }
 
-                if (_readyForRotate && (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W))
+                if (_readyForRotate && e.Code is Keyboard.Key.Up or Keyboard.Key.W)
                 {
                     _readyForRotate = false;
                     if (RotateTetromino())
@@ -730,17 +718,17 @@ public abstract class BaseWorld : BaseGameState, IWorld
                         PlaySound(GameSoundMoveTetromino);
                     }
                 }
-                else if (e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.A)
+                else if (e.Code is Keyboard.Key.Left or Keyboard.Key.A)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, -1);
                 }
-                else if (e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.D)
+                else if (e.Code is Keyboard.Key.Right or Keyboard.Key.D)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 1);
                 }
-                else if ((e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S) && _isKeyDownEnabled)
+                else if (e.Code is Keyboard.Key.Down or Keyboard.Key.S && _isKeyDownEnabled)
                 {
                     PlaySound(GameSoundMoveTetromino);
                     MoveTetromino(target, 0, 1);
@@ -761,12 +749,12 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 return;
             }
 
-            if (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)
+            if (e.Code is Keyboard.Key.Up or Keyboard.Key.W)
             {
                 _readyForRotate = true;
             }
 
-            if ((e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S) && !_isKeyDownEnabled)
+            if (e.Code is Keyboard.Key.Down or Keyboard.Key.S && !_isKeyDownEnabled)
             {
                 _isKeyDownEnabled = true;
             }
@@ -791,13 +779,13 @@ public abstract class BaseWorld : BaseGameState, IWorld
 #if DEBUG
             $"Controller ({arg.JoystickId}) Button Pressed: {arg.Button})".Log();
 #endif
-            if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
+            if (WorldState is WorldState.NewGame or WorldState.Continue)
             {
                 WorldState = WorldState.Playing;
             }
 
             // Press Bumper button
-            if (arg.Button == 4 || arg.Button == 5)
+            if (arg.Button is 4 or 5)
             {
                 FindTetrominoLandingPosition(out Point2[] landingBlocksPosition);
                 MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);

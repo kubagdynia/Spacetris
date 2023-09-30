@@ -53,9 +53,9 @@ public class Starfield : Transformable, Drawable
         uint reduceStars = 8;
         uint classDifference = 3;
 
-        _maxSmallStars = (width / (reduceStars * 10)) * (height / reduceStars);
-        _maxMediumStars = (width / (reduceStars * 10 * classDifference)) * (height / (reduceStars * classDifference));
-        _maxLargeStars = (width / (reduceStars * 10 * classDifference * classDifference)) * (height / (reduceStars * classDifference * classDifference));
+        _maxSmallStars = width / (reduceStars * 10) * (height / reduceStars);
+        _maxMediumStars = width / (reduceStars * 10 * classDifference) * (height / (reduceStars * classDifference));
+        _maxLargeStars = width / (reduceStars * 10 * classDifference * classDifference) * (height / (reduceStars * classDifference * classDifference));
 
         while (_smallStars.Count <= _maxSmallStars)
         {

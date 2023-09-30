@@ -13,7 +13,7 @@ public abstract class BaseGameState
 {
     protected const double GamepadMinimumInputTolerance = 0.0000001;
 
-        protected static readonly Dictionary<Keyboard.Key, string> AllowedKeyboardChars = new Dictionary<Keyboard.Key, string>
+        protected static readonly Dictionary<Keyboard.Key, string> AllowedKeyboardChars = new()
         {
             { Keyboard.Key.A, "A" },
             { Keyboard.Key.B, "B" },
