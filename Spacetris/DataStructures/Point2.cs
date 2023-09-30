@@ -205,7 +205,7 @@ public struct Point2 : IEquatable<Point2>
         /// <summary>
         /// Indicates whether this instance and a specified object are equal
         /// </summary>
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return obj is Point2 point2 && Equals(point2);
         }
