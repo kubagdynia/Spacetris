@@ -1,18 +1,16 @@
-﻿namespace Spacetris.Managers
+namespace Spacetris.Managers;
+
+public enum AssetManagerItemName
 {
-    public enum AssetManagerItemName
-    {
-        // Music
-        Music01,
+    // Music
+    Music01,
 
-        // Textures
-        GamepadTexture,
-        ControlsTexture,
+    // Textures
+    GamepadTexture,
+    ControlsTexture,
 
-        // Fonts
-        TetrisFont,
-        SlkscrFont,
-        ArialFont
-
-    }
+    // Fonts
+    TetrisFont,
+    SlkscrFont,
+    ArialFont
 }

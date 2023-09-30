@@ -1,14 +1,12 @@
-using Newtonsoft.Json;
-using Spacetris.Extensions;
-using System;
-using System.IO;
 using System.Text;
+using System.Text.Json;
+using Spacetris.Extensions;
 
-namespace Spacetris.Settings
+namespace Spacetris.Settings;
+
+public static class DataOperations
 {
-    public static class DataOperations
-    {
-        public static void SaveData<T>(T data, string fileName)
+    public static void SaveData<T>(T data, string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
@@ -18,13 +16,17 @@ namespace Spacetris.Settings
             string tempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             // Convert To Json then to bytes
-            string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
+            string jsonData = JsonSerializer.Serialize(data);
             byte[] jsonByte = Encoding.UTF8.GetBytes(jsonData);
 
             // Create Directory if it does not exist
             if (!Directory.Exists(Path.GetDirectoryName(tempPath)))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(tempPath));
+                string path = Path.GetDirectoryName(tempPath);
+                if (path is not null)
+                {
+                    Directory.CreateDirectory(path);
+                }
             }
 
             try
@@ -62,7 +64,7 @@ namespace Spacetris.Settings
 #if DEBUG
                 "Directory does not exist".Log();
 #endif
-                return default(T);
+                return default;
             }
 
             // Exit if File does not exist
@@ -71,7 +73,7 @@ namespace Spacetris.Settings
 #if DEBUG
                 "File does not exist".Log();
 #endif
-                return default(T);
+                return default;
             }
 
             fileExists = true;
@@ -99,10 +101,14 @@ namespace Spacetris.Settings
             string jsonData = Encoding.ASCII.GetString(jsonByte);
 
             // Convert to Object
-            object resultValue = JsonConvert.DeserializeObject<T>(jsonData);
-            return (T)Convert.ChangeType(resultValue, typeof(T));
+            object resultValue = JsonSerializer.Deserialize<T>(jsonData);
+            if (resultValue is not null)
+            {
+                return (T)Convert.ChangeType(resultValue, typeof(T));
+            }
+
+            throw new ArgumentNullException(nameof(resultValue));
         }
 
         public static T LoadData<T>(string fileName) => LoadData<T>(fileName, out _);
-    }
 }

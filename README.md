@@ -1,5 +1,5 @@
 # Spacetris
-Yet another Tetris game but this time written in [.NET Core 2.0](https://github.com/dotnet/core) and [SFML](https://github.com/SFML/SFML). The project was created for fun in order to show how easily you can create a simple game in C# and SFML.
+Yet another Tetris game but this time written in [.NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) and [SFML](https://github.com/SFML/SFML). The project was created for fun in order to show how easily you can create a simple game in C# and SFML.
 
 Videos
 ------------
@@ -13,18 +13,13 @@ Music
 
 Build
 ------------
-First of all, you must have a dotnet core 2.0, then if you need an executable file just run one of the files below
-* `build_win10-x64_Debug.cmd`
-* `build_win10-x64_Release.cmd`
+First of all, you must have a [.NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), then if you need an executable file, just run one of the following files
+* `build_debug.cmd`
+* `build_release.cmd`
+* `build_win_release_withoutconsolewindow.cmd`
 
-Of course you can run it from Visual Studio or Visual Studio Code by opening solution project
+Of course you can run it from Visual Studio, Visual Studio Code or Rider by opening solution project
 * `Spacetris.sln`
 
 If you want to run it from the console go to "Spacetris\Spacetris" and type
 * `dotnet run`
-
-### Builds
-| Branch       | Status      |
-|--------------|-------------|
-| [master](https://travis-ci.org/kubagdynia/Spacetris/branches)       | [![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=master)](https://travis-ci.org/kubagdynia/Spacetris)|
-| [develop](https://travis-ci.org/kubagdynia/Spacetris/branches)      | [![Build Status](https://travis-ci.org/kubagdynia/Spacetris.svg?branch=develop)](https://travis-ci.org/kubagdynia/Spacetris)|

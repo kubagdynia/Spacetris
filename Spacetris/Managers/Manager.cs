@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+namespace Spacetris.Managers;
 
-namespace Spacetris.Managers
+public class Manager<T> : IManager<T> where T : class
 {
-    public class Manager<T> : IManager<T> where T : class
-    {
-        private static List<ManagerItem<T>> _items;
+    private static List<ManagerItem<T>>? _items;
 
         private static List<ManagerItem<T>> Items
         {
@@ -149,5 +145,4 @@ namespace Spacetris.Managers
 
             return grouped;
         }
-    }
 }

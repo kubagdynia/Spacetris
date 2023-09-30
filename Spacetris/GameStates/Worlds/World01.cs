@@ -1,15 +1,14 @@
-﻿using SFML.Graphics;
+using SFML.Graphics;
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
 using Spacetris.Managers;
 using Spacetris.Settings;
-using System.IO;
 
-namespace Spacetris.GameStates.Worlds
+namespace Spacetris.GameStates.Worlds;
+
+public class World01 : BaseWorld
 {
-    public class World01 : BaseWorld
-    {
-        private Starfield _starfield;
+    private Starfield _starfield;
 
         public override int WorldColumns => 10;
         public override int WorldRows => 20;
@@ -80,5 +79,4 @@ namespace Spacetris.GameStates.Worlds
             // Load sprites
             GameControllerSprite = LoadGameControllerSprite();
         }
-    }
 }

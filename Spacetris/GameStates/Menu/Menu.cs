@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using SFML.Audio;
 using SFML.Graphics;
-using SFML.Window;
 using SFML.System;
+using SFML.Window;
 using Spacetris.BackgroundEffects;
 using Spacetris.DataStructures;
-using Spacetris.Settings;
-using SFML.Audio;
 using Spacetris.Extensions;
-using Spacetris.Managers;
 using Spacetris.GameStates.Worlds;
+using Spacetris.Managers;
+using Spacetris.Settings;
 
-namespace Spacetris.GameStates.Menu
+namespace Spacetris.GameStates.Menu;
+
+public class Menu : BaseGameState, IMenu
 {
-    public class Menu : BaseGameState, IMenu
-    {
-        private const string GameName = "Spacetris";
+    private const string GameName = "Spacetris";
 
         private const int YesNoVolumeStep = 2;
 
@@ -71,11 +68,10 @@ namespace Spacetris.GameStates.Menu
 
         private static Font MadeByFont => AssetManager.Instance.Font.Get(AssetManagerItemName.ArialFont);
 
-        private readonly MenuItem[] _menuItems = new MenuItem[]
-        {
-            new MenuItem(MenuItemType.NewGane, 0, 1),
-            new MenuItem(MenuItemType.Continue, 0, 2, false),
-            new MenuItem("High Scores", MenuItemType.Scores, 0, 3)
+        private readonly MenuItem[] _menuItems = {
+            new(MenuItemType.NewGane, 0, 1),
+            new(MenuItemType.Continue, 0, 2, false),
+            new("High Scores", MenuItemType.Scores, 0, 3)
             {
                 SubMenuItems = new[]
                 {
@@ -83,7 +79,7 @@ namespace Spacetris.GameStates.Menu
                     new MenuItem(MenuItemType.Back, 200, 2, MenuItemType.Scores),
                 }
             },
-            new MenuItem(MenuItemType.Config, 0, 4)
+            new(MenuItemType.Config, 0, 4)
             {
                 SubMenuItems = new[]
                 {
@@ -92,7 +88,7 @@ namespace Spacetris.GameStates.Menu
                     new MenuItem(MenuItemType.Back, 0, 3, MenuItemType.Config),
                 }
             },
-            new MenuItem(MenuItemType.Quit, 0, 5)
+            new(MenuItemType.Quit, 0, 5)
         };
 
         public Menu()
@@ -380,7 +376,7 @@ namespace Spacetris.GameStates.Menu
             {
                 _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), YesNoVolumeStep);
             }
-            else if (e.Code == Keyboard.Key.Return)
+            else if (e.Code == Keyboard.Key.Enter)
             {
                 if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
                 {
@@ -562,9 +558,9 @@ namespace Spacetris.GameStates.Menu
 
         private static Func<object, object, object> ScoresCustomSection()
         {
-            return (arg1, arg2) =>
+            return (arg1, _) =>
             {
-                if (!(arg1 is RenderTarget target))
+                if (arg1 is not RenderTarget target)
                 {
                     return null;
                 }
@@ -747,5 +743,4 @@ namespace Spacetris.GameStates.Menu
                     throw new ArgumentOutOfRangeException();
             }
         }
-    }
 }

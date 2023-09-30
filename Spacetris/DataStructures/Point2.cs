@@ -1,12 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
+namespace Spacetris.DataStructures;
 
-namespace Spacetris.DataStructures
+public struct Point2 : IEquatable<Point2>
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Point2 : IEquatable<Point2>
-    {
-        /// <summary>
+    /// <summary>
 		/// A point at the origin (0, 0)
 		/// </summary>
 		public static readonly Point2 Zero = new Point2(0, 0);
@@ -209,12 +205,8 @@ namespace Spacetris.DataStructures
         /// <summary>
         /// Indicates whether this instance and a specified object are equal
         /// </summary>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (!(obj is Point2))
-                return false;
-
-            return Equals((Point2)obj);
+            return obj is Point2 point2 && Equals(point2);
         }
-    }
 }

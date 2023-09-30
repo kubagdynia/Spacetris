@@ -1,81 +1,79 @@
-﻿using SFML.Graphics;
+using SFML.Graphics;
 using SFML.System;
 using Spacetris.DataStructures;
-using System;
-using System.Collections.Generic;
 
-namespace Spacetris.BackgroundEffects
+namespace Spacetris.BackgroundEffects;
+
+public class Starfield : Transformable, Drawable
 {
-    public class Starfield : Transformable, Drawable
+    private readonly Image _smallStarImage;
+    private readonly Image _mediumStarImage;
+    private readonly Image _largeStarImage;
+
+    private readonly uint _maxSmallStars;
+    private readonly uint _maxMediumStars;
+    private readonly uint _maxLargeStars;
+    
+    private readonly List<Point2> _smallStars = new List<Point2>();
+    private readonly List<Point2> _mediumStars = new List<Point2>();
+    private readonly List<Point2> _largeStars = new List<Point2>();
+
+    private readonly Random _randomX;
+
+    private readonly Image _image;
+    private Texture _texture;
+    private Sprite _sprite;
+
+    private readonly uint _width;
+    private readonly uint _height;
+
+    private readonly float _totalStarsMoveDelay = 0.02f;  // 20 ms
+    private float _totalStarsMoveTimer;
+
+    public Starfield(uint width, uint height)
     {
-        private readonly Image _smallStarImage;
-        private readonly Image _mediumStarImage;
-        private readonly Image _largeStarImage;
+        _width = width;
+        _height = height;
 
-        private readonly uint _maxSmallStars;
-        private readonly uint _maxMediumStars;
-        private readonly uint _maxLargeStars;
+        _image = new Image(width, height, Color.Black);
+        _texture = new Texture(_image);
+        _sprite = new Sprite(_texture);
 
-        private readonly List<Point2> _smallStars = new List<Point2>();
-        private readonly List<Point2> _mediumStars = new List<Point2>();
-        private readonly List<Point2> _largeStars = new List<Point2>();
+        uint smallSize = 1;
+        uint mediumSize = 2;
+        uint largeSize = 4;
 
-        private readonly Random _randomX;
+        _smallStarImage = new Image(smallSize, smallSize, new Color(153, 153, 153));
+        _mediumStarImage = new Image(mediumSize, mediumSize, new Color(204, 204, 204));
+        _largeStarImage = new Image(largeSize, largeSize, Color.White);
 
-        private readonly Image _image;
-        private Texture _texture;
-        private Sprite _sprite;
+        _randomX = new Random(new Time().AsMilliseconds());
+        var randomY = new Random(new Time().AsMilliseconds() + 100);
 
-        private readonly uint _width;
-        private readonly uint _height;
+        uint reduceStars = 8;
+        uint classDifference = 3;
 
-        private readonly float _totalStarsMoveDelay = 0.02f;  // 20 ms
-        private float _totalStarsMoveTimer;
+        _maxSmallStars = width / (reduceStars * 10) * (height / reduceStars);
+        _maxMediumStars = width / (reduceStars * 10 * classDifference) * (height / (reduceStars * classDifference));
+        _maxLargeStars = width / (reduceStars * 10 * classDifference * classDifference) * (height / (reduceStars * classDifference * classDifference));
 
-        public Starfield(uint width, uint height)
+        while (_smallStars.Count <= _maxSmallStars)
         {
-            _width = width;
-            _height = height;
-
-            _image = new Image(width, height, Color.Black);
-            _texture = new Texture(_image);
-            _sprite = new Sprite(_texture);
-
-            uint smallSize = 1;
-            uint mediumSize = 2;
-            uint largeSize = 4;
-
-            _smallStarImage = new Image(smallSize, smallSize, new Color(153, 153, 153));
-            _mediumStarImage = new Image(mediumSize, mediumSize, new Color(204, 204, 204));
-            _largeStarImage = new Image(largeSize, largeSize, Color.White);
-
-            _randomX = new Random(new Time().AsMilliseconds());
-            var randomY = new Random(new Time().AsMilliseconds() + 100);
-
-            uint reduceStars = 8;
-            uint classDifference = 3;
-
-            _maxSmallStars = (width / (reduceStars * 10)) * (height / reduceStars);
-            _maxMediumStars = (width / (reduceStars * 10 * classDifference)) * (height / (reduceStars * classDifference));
-            _maxLargeStars = (width / (reduceStars * 10 * classDifference * classDifference)) * (height / (reduceStars * classDifference * classDifference));
-
-            while (_smallStars.Count <= _maxSmallStars)
-            {
-                _smallStars.Add(new Point2(_randomX.Next() % width + 1, randomY.Next() % height + 1));
-            }
-
-            while (_mediumStars.Count <= _maxMediumStars)
-            {
-                _mediumStars.Add(new Point2(_randomX.Next() % width + 1, randomY.Next() % height + 1));
-            }
-
-            while (_largeStars.Count <= _maxLargeStars)
-            {
-                _largeStars.Add(new Point2(_randomX.Next() % width + 1, randomY.Next() % height + 1));
-            }
+            _smallStars.Add(new Point2(_randomX.Next() % width + 1, randomY.Next() % height + 1));
         }
 
-        public void UpdateStarfield(float deltaTime)
+        while (_mediumStars.Count <= _maxMediumStars)
+        {
+            _mediumStars.Add(new Point2(_randomX.Next() % width + 1, randomY.Next() % height + 1));
+        }
+
+        while (_largeStars.Count <= _maxLargeStars)
+        {
+            _largeStars.Add(new Point2(_randomX.Next() % width + 1, randomY.Next() % height + 1));
+        }
+    }
+    
+    public void UpdateStarfield(float deltaTime)
         {
             _totalStarsMoveTimer += deltaTime;
 
@@ -161,5 +159,4 @@ namespace Spacetris.BackgroundEffects
 
             target.Draw(_sprite);
         }
-    }
 }

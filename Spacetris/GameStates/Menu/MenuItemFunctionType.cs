@@ -1,10 +1,9 @@
-﻿namespace Spacetris.GameStates.Menu
+namespace Spacetris.GameStates.Menu;
+
+public enum MenuItemFunctionType
 {
-    public enum MenuItemFunctionType
-    {
-        None,
-        YesNo,
-        YesNoVolume,
-        CustomPage
-    }
+    None,
+    YesNo,
+    YesNoVolume,
+    CustomPage
 }
