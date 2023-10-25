@@ -14,9 +14,9 @@ public class Starfield : Transformable, Drawable
     private readonly uint _maxMediumStars;
     private readonly uint _maxLargeStars;
     
-    private readonly List<Point2> _smallStars = new List<Point2>();
-    private readonly List<Point2> _mediumStars = new List<Point2>();
-    private readonly List<Point2> _largeStars = new List<Point2>();
+    private readonly List<Point2> _smallStars = new();
+    private readonly List<Point2> _mediumStars = new();
+    private readonly List<Point2> _largeStars = new();
 
     private readonly Random _randomX;
 

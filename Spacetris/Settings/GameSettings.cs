@@ -155,7 +155,7 @@ public static class GameSettings
         }
     }
 
-    private static Settings _settings = new Settings();
+    private static Settings _settings = new();
 
     public static void Save()
     {

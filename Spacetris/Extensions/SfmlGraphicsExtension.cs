@@ -20,7 +20,7 @@ public static class SfmlGraphicsExtension
 
     public static Text Shadow(this Text text, int offset = 2, bool center = true)
     {
-        Text shadowText = new Text()
+        Text shadowText = new Text
         {
             DisplayedString = text.DisplayedString,
             Font = text.Font,
