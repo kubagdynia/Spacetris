@@ -69,7 +69,7 @@ public abstract class BaseGameState
                 return;
             }
 
-            var text = new Text()
+            var text = new Text
             {
                 DisplayedString = value,
                 Font = font,

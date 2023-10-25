@@ -5,7 +5,7 @@ public struct Point2 : IEquatable<Point2>
     /// <summary>
 		/// A point at the origin (0, 0)
 		/// </summary>
-		public static readonly Point2 Zero = new Point2(0, 0);
+		public static readonly Point2 Zero = new(0, 0);
 
         /// <summary>
         /// The X component of the Point

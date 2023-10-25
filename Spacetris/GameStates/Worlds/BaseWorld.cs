@@ -17,13 +17,13 @@ public abstract class BaseWorld : BaseGameState, IWorld
         private Timer _timer;
         private int _tickTimer;
 
-        public Sprite GameControllerSprite;
+        protected Sprite GameControllerSprite;
 
-        public Sound GameSoundMoveTetromino;
-        public Sound GameSoundDropTetromino;
-        public Sound GameSoundRemoveLine;
-        public Sound GameSoundGameOver;
-        public Sound GameSoundLevelUp;
+        protected Sound GameSoundMoveTetromino;
+        protected Sound GameSoundDropTetromino;
+        protected Sound GameSoundRemoveLine;
+        protected Sound GameSoundGameOver;
+        protected Sound GameSoundLevelUp;
 
         private WorldState _worldState;
         public WorldState WorldState
@@ -71,8 +71,6 @@ public abstract class BaseWorld : BaseGameState, IWorld
         protected abstract AssetManagerItemName CounterFontName { get; }
 
         private bool _readyForRotate = true;
-
-        private Point2 _offsetMove = Point2.Zero;
 
         private Sprite _blockSprite;
         public Sprite BlockSprite
@@ -136,7 +134,9 @@ public abstract class BaseWorld : BaseGameState, IWorld
         public virtual void UpdateDrawOffset(RenderWindow target, int offsetX = 0, int offsetY = 0)
         {
             DrawOffset = new Point2(
+                // ReSharper disable once PossibleLossOfFraction
                 (target.Size.X - BackgroundSprite.Texture.Size.X) / 2 + offsetX,
+                // ReSharper disable once PossibleLossOfFraction
                 (target.Size.Y - BackgroundSprite.Texture.Size.Y) / 2 + offsetY);
 
             BackgroundSprite.Position = new Vector2f(DrawOffset.X, DrawOffset.Y);
@@ -814,9 +814,9 @@ public abstract class BaseWorld : BaseGameState, IWorld
 #if DEBUG
             $"Controller ({arg.JoystickId}) Moved: Axis({arg.Axis}), Position({arg.Position})".Log();
 #endif
-            if (arg.Axis == Joystick.Axis.PovX || arg.Axis == Joystick.Axis.PovY)
+            if (arg.Axis is Joystick.Axis.PovX or Joystick.Axis.PovY)
             {
-                if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
+                if (WorldState is WorldState.NewGame or WorldState.Continue)
                 {
                     WorldState = WorldState.Playing;
                 }

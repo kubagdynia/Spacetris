@@ -335,7 +335,7 @@ public class Menu : BaseGameState, IMenu
             }
             else
             {
-                _selectedMenuItem = _menuItems.Where(c => c.Enable).OrderBy(c => c.Position).FirstOrDefault();
+                _selectedMenuItem = _menuItems.Where(c => c.Enable).MinBy(c => c.Position);
             }
 
             return true;
@@ -343,17 +343,15 @@ public class Menu : BaseGameState, IMenu
 
         public void KeyPressed(RenderWindow target, object sender, KeyEventArgs e)
         {
-            if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S ||
-                e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W ||
-                e.Code == Keyboard.Key.Escape)
+            if (e.Code is Keyboard.Key.Down or Keyboard.Key.S or Keyboard.Key.Up or Keyboard.Key.W or Keyboard.Key.Escape)
             {
                 MenuItem nextSelectedMenuItem = _selectedMenuItem;
 
-                if (e.Code == Keyboard.Key.Down || e.Code == Keyboard.Key.S)
+                if (e.Code is Keyboard.Key.Down or Keyboard.Key.S)
                 {
                     nextSelectedMenuItem = GetMenuItems().FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
                 }
-                else if (e.Code == Keyboard.Key.Up || e.Code == Keyboard.Key.W)
+                else if (e.Code is Keyboard.Key.Up or Keyboard.Key.W)
                 {
                     nextSelectedMenuItem = GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
                 }
