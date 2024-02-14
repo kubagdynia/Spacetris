@@ -4,17 +4,7 @@ public class Manager<T> : IManager<T> where T : class
 {
     private static List<ManagerItem<T>> _items;
 
-        private static List<ManagerItem<T>> Items
-        {
-            get
-            {
-                if (_items == null)
-                {
-                    _items = new List<ManagerItem<T>>();
-                }
-                return _items;
-            }
-        }
+        private static List<ManagerItem<T>> Items => _items ??= [];
 
         public T Load(string name, string filename) => Load(name, filename, false);
 

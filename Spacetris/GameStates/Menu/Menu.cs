@@ -137,7 +137,7 @@ public class Menu : BaseGameState, IMenu
             DrawText(target, TitleFont, GameName, _centerX, 100, MenuTitleColor, _menuTitleSize, true, true);
 
             // Draw menu items
-            foreach (MenuItem menuItem in GetMenuItems())
+            foreach (var menuItem in GetMenuItems())
             {
                 if (_selectedMenuItem.Item == menuItem.Item)
                 {
@@ -204,15 +204,12 @@ public class Menu : BaseGameState, IMenu
             // Draw volume bar
             if (menuItem.FunctionType == MenuItemFunctionType.YesNo)
             {
-                int rectSize = 0;
-                if (menuItem.Item == MenuItemType.Sound)
+                var rectSize = menuItem.Item switch
                 {
-                    rectSize = GameSettings.SoundVolume;
-                }
-                else if (menuItem.Item == MenuItemType.Music)
-                {
-                    rectSize = GameSettings.MusicVolume;
-                }
+                    MenuItemType.Sound => GameSettings.SoundVolume,
+                    MenuItemType.Music => GameSettings.MusicVolume,
+                    _ => 0
+                };
 
                 if (rectSize < 1)
                 {
@@ -270,7 +267,7 @@ public class Menu : BaseGameState, IMenu
             {
                 // Move menu title
                 _menuTitleSize += _menuTitleSizeStep;
-                if (_menuTitleSize > MenuTitleSizeMax || _menuTitleSize < MenuTitleSizeMin)
+                if (_menuTitleSize is > MenuTitleSizeMax or < MenuTitleSizeMin)
                 {
                     _menuTitleSizeStep = -_menuTitleSizeStep;
                 }
@@ -286,12 +283,12 @@ public class Menu : BaseGameState, IMenu
                 }
 
                 // Update alpha channel of "Made by"
-                if (_madeByColor.A >= 155 || _madeByColor.A == 0)
+                if (_madeByColor.A is >= 155 or 0)
                 {
                     _menuMadeByAlphaStep = -_menuMadeByAlphaStep;
                 }
 
-                int newAlphaValue = _madeByColor.A - _menuMadeByAlphaStep;
+                var newAlphaValue = _madeByColor.A - _menuMadeByAlphaStep;
                 if (newAlphaValue <= 0)
                 {
                     newAlphaValue = 0;
@@ -313,7 +310,7 @@ public class Menu : BaseGameState, IMenu
 
         public bool EnableMenuItem(MenuItemType menuItem, bool enable, bool select = true)
         {
-            MenuItem item = _menuItems.FirstOrDefault(c => c.Item == menuItem);
+            var item = _menuItems.FirstOrDefault(c => c.Item == menuItem);
 
             if (item == null)
             {
@@ -329,75 +326,77 @@ public class Menu : BaseGameState, IMenu
 
             RecalculateMenuItemsPosition(_menuItems);
 
-            if (select)
-            {
-                _selectedMenuItem = item;
-            }
-            else
-            {
-                _selectedMenuItem = _menuItems.Where(c => c.Enable).MinBy(c => c.Position);
-            }
+            _selectedMenuItem = select ? item : _menuItems.Where(c => c.Enable).MinBy(c => c.Position);
 
             return true;
         }
 
         public void KeyPressed(RenderWindow target, object sender, KeyEventArgs e)
         {
-            if (e.Code is Keyboard.Key.Down or Keyboard.Key.S or Keyboard.Key.Up or Keyboard.Key.W or Keyboard.Key.Escape)
+            switch (e.Code)
             {
-                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+                case Keyboard.Key.Down or Keyboard.Key.S or Keyboard.Key.Up or Keyboard.Key.W or Keyboard.Key.Escape:
+                {
+                    var nextSelectedMenuItem = e.Code switch
+                    {
+                        Keyboard.Key.Down or Keyboard.Key.S => GetMenuItems()
+                            .FirstOrDefault(c =>
+                                c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage &&
+                                c.Position > _selectedMenuItem.Position),
+                        Keyboard.Key.Up or Keyboard.Key.W => GetMenuItems()
+                            .OrderByDescending(c => c.Position)
+                            .FirstOrDefault(c =>
+                                c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage &&
+                                c.Position < _selectedMenuItem.Position),
+                        Keyboard.Key.Escape when _selectedMenuItem.Parent != MenuItemType.None =>
+                            _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent),
+                        _ => _selectedMenuItem
+                    };
 
-                if (e.Code is Keyboard.Key.Down or Keyboard.Key.S)
-                {
-                    nextSelectedMenuItem = GetMenuItems().FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
-                }
-                else if (e.Code is Keyboard.Key.Up or Keyboard.Key.W)
-                {
-                    nextSelectedMenuItem = GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
-                }
-                else if (e.Code == Keyboard.Key.Escape && _selectedMenuItem.Parent != MenuItemType.None)
-                {
-                    nextSelectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
-                }
+                    if (nextSelectedMenuItem != null)
+                    {
+                        PlaySound(_menuSoundBeep);
+                        _selectedMenuItem = nextSelectedMenuItem;
+                    }
 
-                if (nextSelectedMenuItem != null)
-                {
-                    PlaySound(_menuSoundBeep);
-                    _selectedMenuItem = nextSelectedMenuItem;
+                    break;
                 }
-            }
-            else if (e.Code == Keyboard.Key.Left && _selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
-            {
-                _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), -YesNoVolumeStep);
-            }
-            else if (e.Code == Keyboard.Key.Right && _selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
-            {
-                _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), YesNoVolumeStep);
-            }
-            else if (e.Code == Keyboard.Key.Enter)
-            {
-                if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
+                
+                case Keyboard.Key.Left when _selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo:
+                    _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), -YesNoVolumeStep);
+                    break;
+                
+                case Keyboard.Key.Right when _selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo:
+                    _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), YesNoVolumeStep);
+                    break;
+                
+                case Keyboard.Key.Enter:
                 {
-                    _selectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
-                }
-                else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
-                {
-                    _selectedMenuItem.FunctionObject?.Invoke(!(bool)_selectedMenuItem.FunctionObject(null, null), null);
-                }
-                else if (_selectedMenuItem.SubMenuItems != null)
-                {
+                    if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
+                    {
+                        _selectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                    }
+                    else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
+                    {
+                        _selectedMenuItem.FunctionObject?.Invoke(!(bool)_selectedMenuItem.FunctionObject(null, null), null);
+                    }
+                    else if (_selectedMenuItem.SubMenuItems != null)
+                    {
 #if DEBUG
-                    "SUB Menu".Log();
+                        "SUB Menu".Log();
 #endif
-                    _scoreOffset = Point2.Zero;
-                    _scoreOffsetStep = 1;
-                    _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
-                }
+                        _scoreOffset = Point2.Zero;
+                        _scoreOffsetStep = 1;
+                        _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
+                    }
 
-                if (_selectedMenuItem != null)
-                {
-                    PlaySound(_menuSoundSelect);
-                    MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
+                    if (_selectedMenuItem != null)
+                    {
+                        PlaySound(_menuSoundSelect);
+                        MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
+                    }
+
+                    break;
                 }
             }
         }
@@ -426,47 +425,54 @@ public class Menu : BaseGameState, IMenu
 #if DEBUG
             $"Controller ({arg.JoystickId}) Button Pressed: {arg.Button})".Log();
 #endif
-            // Press A button
-            if (arg.Button == 0)
+            switch (arg.Button)
             {
-                if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
+                // Press A button
+                case 0:
                 {
-                    _selectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
-                }
-                else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
-                {
-                    _selectedMenuItem.FunctionObject?.Invoke(!(bool)_selectedMenuItem.FunctionObject(null, null), null);
-                }
-                else if (_selectedMenuItem.SubMenuItems != null)
-                {
+                    if (_selectedMenuItem.Item == MenuItemType.Back && _selectedMenuItem.Parent != MenuItemType.None)
+                    {
+                        _selectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                    }
+                    else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo)
+                    {
+                        _selectedMenuItem.FunctionObject?.Invoke(!(bool)_selectedMenuItem.FunctionObject(null, null), null);
+                    }
+                    else if (_selectedMenuItem.SubMenuItems != null)
+                    {
 #if DEBUG
-                    "SUB Menu".Log();
+                        "SUB Menu".Log();
 #endif
-                    _scoreOffset = Point2.Zero;
-                    _scoreOffsetStep = 1;
-                    _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
-                }
+                        _scoreOffset = Point2.Zero;
+                        _scoreOffsetStep = 1;
+                        _selectedMenuItem = _selectedMenuItem.SubMenuItems.OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage);
+                    }
 
-                if (_selectedMenuItem != null)
-                {
-                    PlaySound(_menuSoundSelect);
-                    MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
-                }
-            }
-            // Press B button
-            else if (arg.Button == 1)
-            {
-                MenuItem nextSelectedMenuItem = _selectedMenuItem;
+                    if (_selectedMenuItem != null)
+                    {
+                        PlaySound(_menuSoundSelect);
+                        MenuItemSelected?.Invoke(this, _selectedMenuItem.Item);
+                    }
 
-                if (_selectedMenuItem.Parent != MenuItemType.None)
-                {
-                    nextSelectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                    break;
                 }
-
-                if (nextSelectedMenuItem != null)
+                // Press B button
+                case 1:
                 {
-                    PlaySound(_menuSoundBeep);
-                    _selectedMenuItem = nextSelectedMenuItem;
+                    var nextSelectedMenuItem = _selectedMenuItem;
+
+                    if (_selectedMenuItem.Parent != MenuItemType.None)
+                    {
+                        nextSelectedMenuItem = _menuItems.SingleOrDefault(c => c.Item == _selectedMenuItem.Parent);
+                    }
+
+                    if (nextSelectedMenuItem != null)
+                    {
+                        PlaySound(_menuSoundBeep);
+                        _selectedMenuItem = nextSelectedMenuItem;
+                    }
+
+                    break;
                 }
             }
         }
@@ -483,41 +489,54 @@ public class Menu : BaseGameState, IMenu
 #if DEBUG
             $"Controller ({arg.JoystickId}) Moved: Axis({arg.Axis}), Position({arg.Position})".Log();
 #endif
-            // Move Down
-            if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance)
+            switch (arg.Axis)
             {
-                MenuItem nextSelectedMenuItem =
-                    GetMenuItems().OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
-
-                if (nextSelectedMenuItem != null)
+                // Move Down
+                case Joystick.Axis.PovY when Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance:
                 {
-                    PlaySound(_menuSoundBeep);
-                    _selectedMenuItem = nextSelectedMenuItem;
-                }
-            }
-            // Move Up
-            else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance)
-            {
-                MenuItem nextSelectedMenuItem =
-                    GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
+                    var nextSelectedMenuItem =
+                        GetMenuItems().OrderBy(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position > _selectedMenuItem.Position);
 
-                if (nextSelectedMenuItem != null)
-                {
-                    PlaySound(_menuSoundBeep);
-                    _selectedMenuItem = nextSelectedMenuItem;
+                    if (nextSelectedMenuItem != null)
+                    {
+                        PlaySound(_menuSoundBeep);
+                        _selectedMenuItem = nextSelectedMenuItem;
+                    }
+
+                    break;
                 }
-            }
-            // Move Left
-            else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo &&
-                arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance)
-            {
-                _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), -YesNoVolumeStep);
-            }
-            // Move Right
-            else if (_selectedMenuItem.FunctionType == MenuItemFunctionType.YesNo &&
-                arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance)
-            {
-                _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), YesNoVolumeStep);
+                // Move Up
+                case Joystick.Axis.PovY when Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance:
+                {
+                    var nextSelectedMenuItem =
+                        GetMenuItems().OrderByDescending(c => c.Position).FirstOrDefault(c => c.Enable && c.FunctionType != MenuItemFunctionType.CustomPage && c.Position < _selectedMenuItem.Position);
+
+                    if (nextSelectedMenuItem != null)
+                    {
+                        PlaySound(_menuSoundBeep);
+                        _selectedMenuItem = nextSelectedMenuItem;
+                    }
+
+                    break;
+                }
+                // Move Left
+                default:
+                {
+                    switch (_selectedMenuItem.FunctionType)
+                    {
+                        case MenuItemFunctionType.YesNo when
+                            arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance:
+                            _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), -YesNoVolumeStep);
+                            break;
+                        // Move Right
+                        case MenuItemFunctionType.YesNo when
+                            arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance:
+                            _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), YesNoVolumeStep);
+                            break;
+                    }
+
+                    break;
+                }
             }
         }
 
@@ -539,14 +558,14 @@ public class Menu : BaseGameState, IMenu
             var menuItems = enableItems as IList<MenuItem> ?? enableItems.ToList();
             if (menuItems.Any(c => c.FunctionType == MenuItemFunctionType.CustomPage))
             {
-                foreach (MenuItem menuItem in menuItems)
+                foreach (var menuItem in menuItems)
                 {
                     menuItem.Y = MenuFirstItemPositionY + MenuNextItemOffsetPositionY * 4 * index++;
                 }
             }
             else
             {
-                foreach (MenuItem menuItem in menuItems)
+                foreach (var menuItem in menuItems)
                 {
                     menuItem.Y = MenuFirstItemPositionY + MenuNextItemOffsetPositionY * index++;
                     RecalculateMenuItemsPosition(menuItem.SubMenuItems);
@@ -563,7 +582,7 @@ public class Menu : BaseGameState, IMenu
                     return null;
                 }
 
-                Point2 scorePosition = new Point2(100 + _scoreOffset.X, 180 + _scoreOffset.Y);
+                var scorePosition = new Point2(100 + _scoreOffset.X, 180 + _scoreOffset.Y);
 
                 var rectangle = new RectangleShape(new Vector2f(750, 250))
                 {
@@ -582,7 +601,7 @@ public class Menu : BaseGameState, IMenu
                 DrawText(target, ItemFont, "Lines", scorePosition.X + 570, scorePosition.Y + 5, ScoresColor2, 20);
                 DrawText(target, ItemFont, "Level", scorePosition.X + 670, scorePosition.Y + 5, ScoresColor2, 20);
 
-                int offset = 1;
+                var offset = 1;
                 foreach (ScoreLine scoreLine in GameSettings.GetScores())
                 {
                     DrawText(target, ItemFont, offset.ToString(), scorePosition.X + 40, scorePosition.Y + 13 + offset * 40, ScoresColor, 20, true, true);
@@ -600,53 +619,50 @@ public class Menu : BaseGameState, IMenu
 
         private static Func<object, object, object> SwitchYesNoMenuItem(MenuItemType menuItemType)
         {
-            switch (menuItemType)
+            return menuItemType switch
             {
-                case MenuItemType.Sound:
-                    return (arg1, arg2) =>
+                MenuItemType.Sound => (arg1, arg2) =>
+                {
+                    if (arg1 != null && arg2 != null)
                     {
-                        if (arg1 != null && arg2 != null)
+                        if (IsNewValue(arg1, arg2, GameSettings.SoundVolume, 0, 100, out byte newValue))
                         {
-                            if (IsNewValue(arg1, arg2, GameSettings.SoundVolume, 0, 100, out byte newValue))
-                            {
-                                GameSettings.SoundVolume = newValue;
-                            }
+                            GameSettings.SoundVolume = newValue;
                         }
-                        else if (arg1 != null)
-                        {
-                            GameSettings.IsSound = (bool)arg1;
-                        }
-
-                        return GameSettings.IsSound;
-                    };
-                case MenuItemType.Music:
-                    return (arg1, arg2) =>
+                    }
+                    else if (arg1 != null)
                     {
-                        if (arg1 != null && arg2 != null)
-                        {
-                            if (IsNewValue(arg1, arg2, GameSettings.MusicVolume, 0, 100, out byte newValue))
-                            {
-                                GameSettings.MusicVolume = newValue;
-                            }
-                        }
-                        else if (arg1 != null)
-                        {
-                            GameSettings.IsMusic = (bool)arg1;
-                            if (GameSettings.IsMusic)
-                            {
-                                GetMusic().Play();
-                            }
-                            else
-                            {
-                                GetMusic().Stop();
-                            }
+                        GameSettings.IsSound = (bool)arg1;
+                    }
 
+                    return GameSettings.IsSound;
+                },
+                MenuItemType.Music => (arg1, arg2) =>
+                {
+                    if (arg1 != null && arg2 != null)
+                    {
+                        if (IsNewValue(arg1, arg2, GameSettings.MusicVolume, 0, 100, out byte newValue))
+                        {
+                            GameSettings.MusicVolume = newValue;
                         }
-                        return GameSettings.IsMusic;
-                    };
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                    }
+                    else if (arg1 != null)
+                    {
+                        GameSettings.IsMusic = (bool)arg1;
+                        if (GameSettings.IsMusic)
+                        {
+                            GetMusic().Play();
+                        }
+                        else
+                        {
+                            GetMusic().Stop();
+                        }
+                    }
+
+                    return GameSettings.IsMusic;
+                },
+                _ => throw new ArgumentOutOfRangeException(nameof(menuItemType))
+            };
         }
 
         private static bool IsNewValue(object arg1, object arg2, byte value, int minValue, int maxValue, out byte newValue)
@@ -655,7 +671,7 @@ public class Menu : BaseGameState, IMenu
 
             if ((bool)arg1)
             {
-                int tmpValue = value + (int)arg2;
+                var tmpValue = value + (int)arg2;
                 if (tmpValue < minValue)
                 {
                     tmpValue = minValue;
@@ -738,7 +754,7 @@ public class Menu : BaseGameState, IMenu
 #endif
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(settingsPropertyType));
             }
         }
 }

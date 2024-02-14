@@ -7,7 +7,7 @@ public static class SfmlGraphicsExtension
 {
     public static Vector2f Center(this Text text, float x, float y)
     {
-        FloatRect textRect = text.GetLocalBounds();
+        var textRect = text.GetLocalBounds();
 
         text.Origin = new Vector2f(
             textRect.Left + textRect.Width / 2.0f,
@@ -20,7 +20,7 @@ public static class SfmlGraphicsExtension
 
     public static Text Shadow(this Text text, int offset = 2, bool center = true)
     {
-        Text shadowText = new Text
+        var shadowText = new Text
         {
             DisplayedString = text.DisplayedString,
             Font = text.Font,

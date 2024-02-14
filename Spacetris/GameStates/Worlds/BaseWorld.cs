@@ -37,15 +37,15 @@ public abstract class BaseWorld : BaseGameState, IWorld
                     WorldStateChanged(this, WorldState);
                 }
 
-                if (value == WorldState.NewGame)
+                switch (value)
                 {
-                    NewGame();
-                    InitializeTimer();
-                }
-
-                if (value == WorldState.Continue)
-                {
-                    InitializeTimer();
+                    case WorldState.NewGame:
+                        NewGame();
+                        InitializeTimer();
+                        break;
+                    case WorldState.Continue:
+                        InitializeTimer();
+                        break;
                 }
             }
         }
@@ -73,32 +73,11 @@ public abstract class BaseWorld : BaseGameState, IWorld
         private bool _readyForRotate = true;
 
         private Sprite _blockSprite;
-        public Sprite BlockSprite
-        {
-            get
-            {
-                if (_blockSprite == null)
-                {
-                    _blockSprite = LoadSprite(BlocksTexturePath, Point2.Zero);
-                }
+        public Sprite BlockSprite => _blockSprite ??= LoadSprite(BlocksTexturePath, Point2.Zero);
 
-                return _blockSprite;
-            }
-        }
 
         private Sprite _backgroundSprite;
-        public Sprite BackgroundSprite
-        {
-            get
-            {
-                if (_backgroundSprite == null)
-                {
-                    _backgroundSprite = LoadSprite(BackgroundTexturePath, DrawOffset);
-                }
-
-                return _backgroundSprite;
-            }
-        }
+        public Sprite BackgroundSprite => _backgroundSprite ??= LoadSprite(BackgroundTexturePath, DrawOffset);
 
         public Font Font => AssetManager.Instance.Font.Get(FontName);
 
@@ -108,18 +87,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         public event EventHandler<WorldState> WorldStateChanged;
 
-        public int[,] World
-        {
-            get
-            {
-                if (_world == null)
-                {
-                    _world = new int[WorldRows, WorldColumns];
-                }
-
-                return _world;
-            }
-        }
+        public int[,] World => _world ??= new int[WorldRows, WorldColumns];
 
         public virtual void Initialize(RenderWindow target)
         {
@@ -172,7 +140,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         public virtual bool CheckWallCollider(Point2[] tetrominoBlocksPosition)
         {
-            for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
             {
                 if (tetrominoBlocksPosition[i].X < 0 || tetrominoBlocksPosition[i].X >= WorldColumns)
                 {
@@ -185,7 +153,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         public virtual bool CheckWorldCollider(Point2[] tetrominoBlocksPosition)
         {
-            for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
             {
                 if (tetrominoBlocksPosition[i].X < 0 || tetrominoBlocksPosition[i].X >= WorldColumns || tetrominoBlocksPosition[i].Y < 0)
                 {
@@ -211,11 +179,11 @@ public abstract class BaseWorld : BaseGameState, IWorld
         {
             BlockSprite.Color = new Color(255, 255, 255, alpha);
 
-            for (int row = 0; row < WorldRows; row++)
+            for (var row = 0; row < WorldRows; row++)
             {
-                for (int column = 0; column < WorldColumns; column++)
+                for (var column = 0; column < WorldColumns; column++)
                 {
-                    int blockNumber = World[row, column];
+                    var blockNumber = World[row, column];
                     if (blockNumber != 0)
                     {
                         ChangeBlockSpritePosition(
@@ -253,7 +221,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
         {
             DrawText(target, CounterFont, "GAME OVER", 470, 180, new Color(242, 51, 51, 189), 130, true, true);
 
-            Color scoreColor = new Color(255, 255, 255, 189);
+            var scoreColor = new Color(255, 255, 255, 189);
 
             // Top 5 scores
             if (GameSettings.IsEnoughPointsForTopScores(GameState.Score))
@@ -291,7 +259,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
         public virtual void DrawTetromino(RenderWindow target, Point2[] tetrominoBlocksPosition)
         {
             ChangeBlockSpriteTextureRect(GameState.CurrentTetrominoNumber);
-            for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
             {
                 ChangeBlockSpritePosition(
                     tetrominoBlocksPosition[i].X * SpriteBlockSize + DrawOffset.X + WorldDrawOffset.X,
@@ -303,13 +271,13 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         public virtual void DrawNextTetrominoPreview(RenderWindow target)
         {
-            int tetrominoNumber = GameState.NextTetrominoNumber;
+            var tetrominoNumber = GameState.NextTetrominoNumber;
 
-            for (int row = 0; row < Tetrominos.TetrominoSize; row++)
+            for (var row = 0; row < Tetrominos.TetrominoSize; row++)
             {
-                for (int column = 0; column < Tetrominos.TetrominoSize; column++)
+                for (var column = 0; column < Tetrominos.TetrominoSize; column++)
                 {
-                    int block = Tetrominos.GetTetrominoBlock(tetrominoNumber, 1, row, column);
+                    var block = Tetrominos.GetTetrominoBlock(tetrominoNumber, 1, row, column);
 
                     if (block == 0)
                     {
@@ -368,7 +336,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
             {
                 DrawGameOver(target);
             }
-            else if (WorldState == WorldState.NewGame || WorldState == WorldState.Continue)
+            else if (WorldState is WorldState.NewGame or WorldState.Continue)
             {
                 DrawStartCounter(target);
             }
@@ -381,9 +349,9 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         public virtual int CheckLines(RenderWindow target)
         {
-            int removedLines = 0;
+            var removedLines = 0;
 
-            for (int row = 0; row < WorldRows; row++)
+            for (var row = 0; row < WorldRows; row++)
             {
                 if (LineIsFullOccupied(row))
                 {
@@ -408,28 +376,27 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 return 0;
             }
 
-            int score = 0;
+            var score = 0;
 
             if (landed)
             {
                 score += 1;
             }
 
-            if (lines == 1)
+            switch (lines)
             {
-                score += 40 * (level + 1);
-            }
-            else if (lines == 2)
-            {
-                score += 100 * (level + 1);
-            }
-            else if (lines == 3)
-            {
-                score += 300 * (level + 1);
-            }
-            else if (lines == 4)
-            {
-                score += 1200 * (level + 1);
+                case 1:
+                    score += 40 * (level + 1);
+                    break;
+                case 2:
+                    score += 100 * (level + 1);
+                    break;
+                case 3:
+                    score += 300 * (level + 1);
+                    break;
+                case 4:
+                    score += 1200 * (level + 1);
+                    break;
             }
 
             return score;
@@ -438,10 +405,10 @@ public abstract class BaseWorld : BaseGameState, IWorld
         public int CalculateLevel(int lines)
         {
             // Level up after every 10 lines
-            int level = lines / 10;
+            var level = lines / 10;
 
             // Increase the speed of falling tetromino for each new level (800 milliseconds for 0 level)
-            float speed = (48f - (2f * level)) / 60f;
+            var speed = (48f - (2f * level)) / 60f;
             GameState.TotalFallTickDelay = speed;
 
             return level;
@@ -466,12 +433,12 @@ public abstract class BaseWorld : BaseGameState, IWorld
         {
             spriteBlockNumber = 0;
 
-            int index = 0;
-            for (int row = 0; row < Tetrominos.TetrominoSize; row++)
+            var index = 0;
+            for (var row = 0; row < Tetrominos.TetrominoSize; row++)
             {
-                for (int column = 0; column < Tetrominos.TetrominoSize; column++)
+                for (var column = 0; column < Tetrominos.TetrominoSize; column++)
                 {
-                    int tetrominoBlock = Tetrominos.GetTetrominoBlock(tetrominoNumber, tetrominoRotationStateNumber, row, column);
+                    var tetrominoBlock = Tetrominos.GetTetrominoBlock(tetrominoNumber, tetrominoRotationStateNumber, row, column);
                     if (tetrominoBlock != 0)
                     {
                         var blockPosition = new Point2(column, row) + GameState.CurrentTetrominoPosition;
@@ -491,24 +458,24 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         public virtual bool RotateTetromino()
         {
-            for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
             {
                 GameState.PreviousTetrominoBlocksPosition[i] = GameState.CurrentTetrominoBlocksPosition[i];
             }
 
             // Rotate
-            int oldTetrominoRotate = GameState.CurrentTetrominoRotationStateNumber;
+            var oldTetrominoRotate = GameState.CurrentTetrominoRotationStateNumber;
             GameState.CurrentTetrominoRotationStateNumber++;
             if (GameState.CurrentTetrominoRotationStateNumber > Tetrominos.TetrominoRotationStates)
             {
                 GameState.CurrentTetrominoRotationStateNumber = Tetrominos.TetrominoDefaultRotationState;
             }
 
-            SetTetrominoBlocksPosition(GameState.CurrentTetrominoNumber, GameState.CurrentTetrominoRotationStateNumber, out int spriteBlockNumber);
+            SetTetrominoBlocksPosition(GameState.CurrentTetrominoNumber, GameState.CurrentTetrominoRotationStateNumber, out var spriteBlockNumber);
 
             if (!CheckWallCollider(GameState.CurrentTetrominoBlocksPosition) || !CheckWorldCollider(GameState.CurrentTetrominoBlocksPosition))
             {
-                for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+                for (var i = 0; i < Tetrominos.TetrominoSize; i++)
                 {
                     GameState.CurrentTetrominoBlocksPosition[i] = GameState.PreviousTetrominoBlocksPosition[i];
                 }
@@ -528,13 +495,13 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 return;
             }
 
-            for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
             {
                 GameState.PreviousTetrominoBlocksPosition[i] = GameState.CurrentTetrominoBlocksPosition[i];
             }
 
             // Move
-            for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+            for (var i = 0; i < Tetrominos.TetrominoSize; i++)
             {
                 if (dx != 0)
                 {
@@ -549,7 +516,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
             if (!CheckWallCollider(GameState.CurrentTetrominoBlocksPosition))
             {
-                for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+                for (var i = 0; i < Tetrominos.TetrominoSize; i++)
                 {
                     GameState.CurrentTetrominoBlocksPosition[i] = GameState.PreviousTetrominoBlocksPosition[i];
                 }
@@ -559,7 +526,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
             if (!CheckWorldCollider(GameState.CurrentTetrominoBlocksPosition))
             {
-                for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+                for (var i = 0; i < Tetrominos.TetrominoSize; i++)
                 {
                     GameState.CurrentTetrominoBlocksPosition[i] = GameState.PreviousTetrominoBlocksPosition[i];
                 }
@@ -567,28 +534,21 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 // We can pin it to the play field only when the tetromino moves down
                 if (dy > 0)
                 {
-                    for (int i = 0; i < Tetrominos.TetrominoSize; i++)
+                    for (var i = 0; i < Tetrominos.TetrominoSize; i++)
                     {
                         PinBlockToWorld(GameState.CurrentTetrominoBlocksPosition[i].Y,
                             GameState.CurrentTetrominoBlocksPosition[i].X, GameState.CurrentTetrominoNumber);
                     }
 
-                    int removedLines = CheckLines(target);
+                    var removedLines = CheckLines(target);
 
-                    if (removedLines > 0)
-                    {
-                        PlaySound(GameSoundRemoveLine);
-                    }
-                    else
-                    {
-                        PlaySound(GameSoundDropTetromino);
-                    }
+                    PlaySound(removedLines > 0 ? GameSoundRemoveLine : GameSoundDropTetromino);
 
                     _isKeyDownEnabled = false;
 
                     GameState.Lines += removedLines;
 
-                    int newLevel = CalculateLevel(GameState.Lines);
+                    var newLevel = CalculateLevel(GameState.Lines);
                     if (newLevel != GameState.Level)
                     {
                         GameState.Level = newLevel;
@@ -620,7 +580,8 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 GameState.NextTetrominoNumber = Tetrominos.GetRandomTetrominoNumber(tetrominoNumber);
             }
 
-            bool returnValue = CreateNewTetromino(tetrominoNumber, Tetrominos.TetrominoDefaultRotationState, setDefaultStartPosition);
+            var returnValue =
+                CreateNewTetromino(tetrominoNumber, Tetrominos.TetrominoDefaultRotationState, setDefaultStartPosition);
 
             // If we can not create a new tetromino, finish the game and display game over
             if (!returnValue)
@@ -645,7 +606,8 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 GameState.CurrentTetrominoPosition = GetTetrominoSpawnPosition();
             }
 
-            bool returnValue = SetTetrominoBlocksPosition(tetrominoNumber, tetrominoRotationStateNumber, out int spriteBlockNumber);
+            var returnValue =
+                SetTetrominoBlocksPosition(tetrominoNumber, tetrominoRotationStateNumber, out var spriteBlockNumber);
 
             ChangeBlockSpriteTextureRect(spriteBlockNumber);
 
@@ -654,9 +616,9 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         public virtual void ClearWorld()
         {
-            for (int row = 0; row < WorldRows; row++)
+            for (var row = 0; row < WorldRows; row++)
             {
-                for (int column = 0; column < WorldColumns; column++)
+                for (var column = 0; column < WorldColumns; column++)
                 {
                     World[row, column] = 0;
                 }
@@ -682,23 +644,21 @@ public abstract class BaseWorld : BaseGameState, IWorld
                     {
                         _userName += AllowedKeyboardChars[e.Code];
                     }
-                    else if (e.Code == Keyboard.Key.Backspace && _userName.Length > 0)
+                    else switch (e.Code)
                     {
-                        _userName = _userName.Remove(_userName.Length - 1);
-                    }
-                    else if (e.Code == Keyboard.Key.Enter)
-                    {
-                        GameSettings.AddScore(new ScoreLine(_userName, GameState.Lines, GameState.Level, GameState.Score));
-                        WorldState = WorldState.Quit;
+                        case Keyboard.Key.Backspace when _userName.Length > 0:
+                            _userName = _userName.Remove(_userName.Length - 1);
+                            break;
+                        case Keyboard.Key.Enter:
+                            GameSettings.AddScore(new ScoreLine(_userName, GameState.Lines, GameState.Level, GameState.Score));
+                            WorldState = WorldState.Quit;
+                            break;
                     }
                 }
             }
             else if (e.Code == Keyboard.Key.Escape || (e.Code == Keyboard.Key.P && WorldState != WorldState.GameOver))
             {
-                if (_timer != null)
-                {
-                    _timer.Dispose();
-                }
+                _timer?.Dispose();
                 WorldState = WorldState.Pause;
             }
             else if ((_readyForRotate && e.Code is Keyboard.Key.Up or Keyboard.Key.W) ||
@@ -718,26 +678,25 @@ public abstract class BaseWorld : BaseGameState, IWorld
                         PlaySound(GameSoundMoveTetromino);
                     }
                 }
-                else if (e.Code is Keyboard.Key.Left or Keyboard.Key.A)
+                else switch (e.Code)
                 {
-                    PlaySound(GameSoundMoveTetromino);
-                    MoveTetromino(target, -1);
-                }
-                else if (e.Code is Keyboard.Key.Right or Keyboard.Key.D)
-                {
-                    PlaySound(GameSoundMoveTetromino);
-                    MoveTetromino(target, 1);
-                }
-                else if (e.Code is Keyboard.Key.Down or Keyboard.Key.S && _isKeyDownEnabled)
-                {
-                    PlaySound(GameSoundMoveTetromino);
-                    MoveTetromino(target, 0, 1);
-                }
-                else if (e.Code == Keyboard.Key.Space)
-                {
-                    FindTetrominoLandingPosition(out Point2[] landingBlocksPosition);
-                    MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);
-                    MoveTetromino(target, 0, 1);
+                    case Keyboard.Key.Left or Keyboard.Key.A:
+                        PlaySound(GameSoundMoveTetromino);
+                        MoveTetromino(target, -1);
+                        break;
+                    case Keyboard.Key.Right or Keyboard.Key.D:
+                        PlaySound(GameSoundMoveTetromino);
+                        MoveTetromino(target, 1);
+                        break;
+                    case Keyboard.Key.Down or Keyboard.Key.S when _isKeyDownEnabled:
+                        PlaySound(GameSoundMoveTetromino);
+                        MoveTetromino(target, 0, 1);
+                        break;
+                    case Keyboard.Key.Space:
+                        FindTetrominoLandingPosition(out Point2[] landingBlocksPosition);
+                        MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);
+                        MoveTetromino(target, 0, 1);
+                        break;
                 }
             }
         }
@@ -749,14 +708,14 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 return;
             }
 
-            if (e.Code is Keyboard.Key.Up or Keyboard.Key.W)
+            switch (e.Code)
             {
-                _readyForRotate = true;
-            }
-
-            if (e.Code is Keyboard.Key.Down or Keyboard.Key.S && !_isKeyDownEnabled)
-            {
-                _isKeyDownEnabled = true;
+                case Keyboard.Key.Up or Keyboard.Key.W:
+                    _readyForRotate = true;
+                    break;
+                case Keyboard.Key.Down or Keyboard.Key.S when !_isKeyDownEnabled:
+                    _isKeyDownEnabled = true;
+                    break;
             }
         }
 
@@ -784,21 +743,19 @@ public abstract class BaseWorld : BaseGameState, IWorld
                 WorldState = WorldState.Playing;
             }
 
-            // Press Bumper button
-            if (arg.Button is 4 or 5)
+            switch (arg.Button)
             {
-                FindTetrominoLandingPosition(out Point2[] landingBlocksPosition);
-                MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);
-                MoveTetromino(target, 0, 1);
-            }
-            // Press Menu or B button
-            else if (arg.Button == 7 || arg.Button == 1)
-            {
-                if (_timer != null)
-                {
-                    _timer.Dispose();
-                }
-                WorldState = WorldState.Pause;
+                // Press Bumper button
+                case 4 or 5:
+                    FindTetrominoLandingPosition(out Point2[] landingBlocksPosition);
+                    MoveTetromino(target, 0, landingBlocksPosition[0].Y - GameState.CurrentTetrominoBlocksPosition[0].Y);
+                    MoveTetromino(target, 0, 1);
+                    break;
+                // Press Menu or B button
+                case 7 or 1:
+                    _timer?.Dispose();
+                    WorldState = WorldState.Pause;
+                    break;
             }
         }
 
@@ -821,32 +778,37 @@ public abstract class BaseWorld : BaseGameState, IWorld
                     WorldState = WorldState.Playing;
                 }
 
-                if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance)
+                switch (arg.Axis)
                 {
-                    PlaySound(GameSoundMoveTetromino);
-                    MoveTetromino(target, -1);
-                }
-                else if (arg.Axis == Joystick.Axis.PovX && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance)
-                {
-                    PlaySound(GameSoundMoveTetromino);
-                    MoveTetromino(target, 1);
-                }
-                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance)
-                {
-                    PlaySound(GameSoundMoveTetromino);
-                    MoveTetromino(target, 0, 1);
-                }
-                else if (_readyForRotate && arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance)
-                {
-                    _readyForRotate = false;
-                    if (RotateTetromino())
-                    {
+                    case Joystick.Axis.PovX when Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance:
                         PlaySound(GameSoundMoveTetromino);
+                        MoveTetromino(target, -1);
+                        break;
+                    case Joystick.Axis.PovX when Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance:
+                        PlaySound(GameSoundMoveTetromino);
+                        MoveTetromino(target, 1);
+                        break;
+                    case Joystick.Axis.PovY when Math.Abs(arg.Position + 100) < GamepadMinimumInputTolerance:
+                        PlaySound(GameSoundMoveTetromino);
+                        MoveTetromino(target, 0, 1);
+                        break;
+                    default:
+                    {
+                        if (_readyForRotate && arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position - 100) < GamepadMinimumInputTolerance)
+                        {
+                            _readyForRotate = false;
+                            if (RotateTetromino())
+                            {
+                                PlaySound(GameSoundMoveTetromino);
+                            }
+                        }
+                        else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < GamepadMinimumInputTolerance)
+                        {
+                            _readyForRotate = true;
+                        }
+
+                        break;
                     }
-                }
-                else if (arg.Axis == Joystick.Axis.PovY && Math.Abs(arg.Position) < GamepadMinimumInputTolerance)
-                {
-                    _readyForRotate = true;
                 }
             }
         }
@@ -893,7 +855,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
         private bool LineIsFullOccupied(int lineNumber)
         {
             // All columns must be occupied by blocks
-            for (int column = 0; column < WorldColumns; column++)
+            for (var column = 0; column < WorldColumns; column++)
             {
                 if (World[lineNumber, column] == 0)
                 {
@@ -907,7 +869,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
         private bool LineInEmpty(int lineNumber)
         {
             // All columns must be empty from blocks
-            for (int column = 0; column < WorldColumns; column++)
+            for (var column = 0; column < WorldColumns; column++)
             {
                 if (World[lineNumber, column] != 0)
                 {
@@ -920,16 +882,16 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         private void RecalculatePositionsOnWorld()
         {
-            int[,] newPlayField = new int[WorldRows, WorldColumns];
+            var newPlayField = new int[WorldRows, WorldColumns];
 
-            int newPlayFieldRow = WorldRows;
-            for (int row = WorldRows - 1; row >= 0; row--)
+            var newPlayFieldRow = WorldRows;
+            for (var row = WorldRows - 1; row >= 0; row--)
             {
                 if (!LineInEmpty(row))
                 {
                     newPlayFieldRow--;
 
-                    for (int column = 0; column < WorldColumns; column++)
+                    for (var column = 0; column < WorldColumns; column++)
                     {
                         newPlayField[newPlayFieldRow, column] = World[row, column];
                     }
@@ -937,9 +899,9 @@ public abstract class BaseWorld : BaseGameState, IWorld
             }
 
             // Copy newPlayField to PlayField
-            for (int row = 0; row < WorldRows; row++)
+            for (var row = 0; row < WorldRows; row++)
             {
-                for (int column = 0; column < WorldColumns; column++)
+                for (var column = 0; column < WorldColumns; column++)
                 {
                     World[row, column] = newPlayField[row, column];
                 }
@@ -948,7 +910,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         private void RemoveLine(int lineNumber)
         {
-            for (int column = 0; column < WorldColumns; column++)
+            for (var column = 0; column < WorldColumns; column++)
             {
                 World[lineNumber, column] = 0;
             }

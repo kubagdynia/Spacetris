@@ -127,15 +127,12 @@ public class SpacetrisGame : Game
 
         private IGameInput GetGameInput()
         {
-            switch (_gameState)
+            return _gameState switch
             {
-                case SpacetrisGameState.Game:
-                    return _world;
-                case SpacetrisGameState.Menu:
-                    return _menu;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                SpacetrisGameState.Game => _world,
+                SpacetrisGameState.Menu => _menu,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         private void MenuItemSelected(object sender, MenuItemType e)
@@ -159,6 +156,16 @@ public class SpacetrisGame : Game
                     break;
                 case MenuItemType.Music:
                     break;
+                case MenuItemType.None:
+                    break;
+                case MenuItemType.Config:
+                    break;
+                case MenuItemType.ScoresDetails:
+                    break;
+                case MenuItemType.Back:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(e), e, null);
             }
         }
 
@@ -180,6 +187,16 @@ public class SpacetrisGame : Game
                     _menu.EnableMenuItem(MenuItemType.Continue, true);
                     _gameState = SpacetrisGameState.Menu;
                     break;
+                case WorldState.NewGame:
+                    break;
+                case WorldState.Playing:
+                    break;
+                case WorldState.Continue:
+                    break;
+                case WorldState.GameOver:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(e), e, null);
             }
         }
     
