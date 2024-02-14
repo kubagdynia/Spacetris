@@ -1,29 +1,24 @@
 namespace Spacetris.GameStates.Menu;
 
-public class MenuItem
+public class MenuItem(
+    string name,
+    MenuItemType item,
+    int y,
+    int position,
+    bool enable = true,
+    MenuItemType parent = MenuItemType.None,
+    MenuItemFunctionType functionType = MenuItemFunctionType.None,
+    Func<object, object, object> functionObject = null)
 {
-    public string Name { get; }
-    public int Y { get; set; }
-    public int Position { get; }
-    public MenuItemType Item { get; }
-    public bool Enable { get; set; }
+    public string Name { get; } = name;
+    public int Y { get; set; } = y;
+    public int Position { get; } = position;
+    public MenuItemType Item { get; } = item;
+    public bool Enable { get; set; } = enable;
     public MenuItem[] SubMenuItems { get; set; }
-    public MenuItemType Parent { get; }
-    public MenuItemFunctionType FunctionType { get; }
-    public readonly Func<object, object, object> FunctionObject;
-
-    public MenuItem(string name, MenuItemType item, int y, int position, bool enable = true,
-        MenuItemType parent = MenuItemType.None, MenuItemFunctionType functionType = MenuItemFunctionType.None, Func<object, object, object> functionObject = null)
-    {
-        Name = name;
-        Item = item;
-        Y = y;
-        Position = position;
-        Enable = enable;
-        Parent = parent;
-        FunctionType = functionType;
-        FunctionObject = functionObject;
-    }
+    public MenuItemType Parent { get; } = parent;
+    public MenuItemFunctionType FunctionType { get; } = functionType;
+    public readonly Func<object, object, object> FunctionObject = functionObject;
 
     public MenuItem(MenuItemType item, int y, int position, bool enable = true, MenuItemType parent = MenuItemType.None)
         : this(item.ToString(), item, y, position, enable, parent)

@@ -13,16 +13,16 @@ public static class DataOperations
                 throw new ArgumentNullException(nameof(fileName));
             }
             
-            string tempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            var tempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             // Convert To Json then to bytes
-            string jsonData = JsonSerializer.Serialize(data);
-            byte[] jsonByte = Encoding.UTF8.GetBytes(jsonData);
+            var jsonData = JsonSerializer.Serialize(data);
+            var jsonByte = Encoding.UTF8.GetBytes(jsonData);
 
             // Create Directory if it does not exist
             if (!Directory.Exists(Path.GetDirectoryName(tempPath)))
             {
-                string path = Path.GetDirectoryName(tempPath);
+                var path = Path.GetDirectoryName(tempPath);
                 if (path is not null)
                 {
                     Directory.CreateDirectory(path);
@@ -56,7 +56,7 @@ public static class DataOperations
                 throw new ArgumentNullException(nameof(fileName));
             }
             
-            string tempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            var tempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             // Exit if Directory does not exist
             if (!Directory.Exists(Path.GetDirectoryName(tempPath)))
@@ -98,7 +98,7 @@ public static class DataOperations
             }
 
             // Convert to json string
-            string jsonData = Encoding.ASCII.GetString(jsonByte);
+            var jsonData = Encoding.ASCII.GetString(jsonByte);
 
             // Convert to Object
             object resultValue = JsonSerializer.Deserialize<T>(jsonData);

@@ -20,7 +20,7 @@ public static class Tetrominos
     {
         Random random = new Random(DateTime.Now.Millisecond);
 
-        int resultIndex = random.Next() % NumberOfTetrominos + 1;
+        var resultIndex = random.Next() % NumberOfTetrominos + 1;
 
         if (resultIndex == numberToExclude)
         {

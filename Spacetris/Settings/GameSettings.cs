@@ -201,7 +201,7 @@ public static class GameSettings
             return true;
         }
 
-        bool isEnoughPoints = Scores.OrderByDescending(c => c.Score).Take(TopScores).Any(c => c.Score < score);
+        var isEnoughPoints = Scores.OrderByDescending(c => c.Score).Take(TopScores).Any(c => c.Score < score);
 
         return isEnoughPoints;
     }

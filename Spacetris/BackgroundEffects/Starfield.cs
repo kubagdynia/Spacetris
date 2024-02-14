@@ -14,9 +14,9 @@ public class Starfield : Transformable, Drawable
     private readonly uint _maxMediumStars;
     private readonly uint _maxLargeStars;
     
-    private readonly List<Point2> _smallStars = new();
-    private readonly List<Point2> _mediumStars = new();
-    private readonly List<Point2> _largeStars = new();
+    private readonly List<Point2> _smallStars = [];
+    private readonly List<Point2> _mediumStars = [];
+    private readonly List<Point2> _largeStars = [];
 
     private readonly Random _randomX;
 
@@ -86,7 +86,7 @@ public class Starfield : Transformable, Drawable
             _totalStarsMoveTimer = 0;
 
             // Move the stars down and remove them if they cross the bottom line
-            for (int i = 0; i < _smallStars.Count; i++)
+            for (var i = 0; i < _smallStars.Count; i++)
             {
                 if (_smallStars[i].Y > _height)
                 {
@@ -97,7 +97,7 @@ public class Starfield : Transformable, Drawable
                 _smallStars[i] += new Point2(0, 1);
             }
 
-            for (int i = 0; i < _mediumStars.Count; i++)
+            for (var i = 0; i < _mediumStars.Count; i++)
             {
                 if (_mediumStars[i].Y > _height)
                 {
@@ -108,7 +108,7 @@ public class Starfield : Transformable, Drawable
                 _mediumStars[i] += new Point2(0, 2);
             }
 
-            for (int i = 0; i < _largeStars.Count; i++)
+            for (var i = 0; i < _largeStars.Count; i++)
             {
                 if (_largeStars[i].Y > _height)
                 {
