@@ -1,3 +1,5 @@
+using SFML.Graphics;
+
 namespace Spacetris.Managers;
 
 public class Manager<T> : IManager<T> where T : class
@@ -37,8 +39,18 @@ public class Manager<T> : IManager<T> where T : class
                 }
             }
 
+            T instance;
             // Create instance of T class and send filename to its contructor
-            var instance = Activator.CreateInstance(typeof(T), filename) as T;
+            // In version 2.6.0 of SFML.Net, the constructor of the Texture class was changed, causing a compilation error.
+            // This required a workaround in the code.
+            if (typeof(T) == typeof(Texture))
+            {
+                instance = Activator.CreateInstance(typeof(T), filename, false) as T;
+            }
+            else
+            {
+                instance = Activator.CreateInstance(typeof(T), filename) as T;
+            }
 
             if (parent == null)
             {
@@ -101,7 +113,7 @@ public class Manager<T> : IManager<T> where T : class
         {
             if (!Exists(name, parent))
             {
-                return default(T);
+                return default;
             }
 
             if (parent == null)
@@ -123,13 +135,12 @@ public class Manager<T> : IManager<T> where T : class
 
             foreach (var item in Items.Where(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase) || name == null))
             {
-                if (!grouped.ContainsKey(item.Parent))
+                if (!grouped.TryGetValue(item.Parent, out var groupedItem))
                 {
-                    grouped.Add(item.Parent, new List<T> { item.Resource });
+                    grouped.Add(item.Parent, [item.Resource]);
                     continue;
                 }
 
-                var groupedItem = grouped[item.Parent];
                 groupedItem.Add(item.Resource);
             }
 
