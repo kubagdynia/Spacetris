@@ -18,7 +18,7 @@ public static class Tetrominos
 
     public static int GetRandomTetrominoNumber(int numberToExclude)
     {
-        Random random = new Random(DateTime.Now.Millisecond);
+        var random = new Random(DateTime.Now.Millisecond);
 
         var resultIndex = random.Next() % NumberOfTetrominos + 1;
 
