@@ -4,7 +4,7 @@ using Spacetris.DataStructures;
 
 namespace Spacetris.BackgroundEffects;
 
-public class Starfield : Transformable, Drawable
+public class Starfield : Transformable, IBackgroundEffects
 {
     private readonly Image _smallStarImage;
     private readonly Image _mediumStarImage;
@@ -27,7 +27,7 @@ public class Starfield : Transformable, Drawable
     private readonly uint _width;
     private readonly uint _height;
 
-    private readonly float _totalStarsMoveDelay = 0.02f;  // 20 ms
+    private const float TotalStarsMoveDelay = 0.02f; // 20 ms
     private float _totalStarsMoveTimer;
 
     public Starfield(uint width, uint height)
@@ -39,9 +39,9 @@ public class Starfield : Transformable, Drawable
         _texture = new Texture(_image);
         _sprite = new Sprite(_texture);
 
-        uint smallSize = 1;
-        uint mediumSize = 2;
-        uint largeSize = 4;
+        const uint smallSize = 1;
+        const uint mediumSize = 2;
+        const uint largeSize = 4;
 
         _smallStarImage = new Image(smallSize, smallSize, new Color(153, 153, 153));
         _mediumStarImage = new Image(mediumSize, mediumSize, new Color(204, 204, 204));
@@ -50,8 +50,8 @@ public class Starfield : Transformable, Drawable
         _randomX = new Random(new Time().AsMilliseconds());
         var randomY = new Random(new Time().AsMilliseconds() + 100);
 
-        uint reduceStars = 8;
-        uint classDifference = 3;
+        const uint reduceStars = 8;
+        const uint classDifference = 3;
 
         _maxSmallStars = width / (reduceStars * 10) * (height / reduceStars);
         _maxMediumStars = width / (reduceStars * 10 * classDifference) * (height / (reduceStars * classDifference));
@@ -73,90 +73,90 @@ public class Starfield : Transformable, Drawable
         }
     }
     
-    public void UpdateStarfield(float deltaTime)
+    public void Update(float deltaTime)
+    {
+        _totalStarsMoveTimer += deltaTime;
+
+        // Tick
+        if (_totalStarsMoveTimer <= TotalStarsMoveDelay)
         {
-            _totalStarsMoveTimer += deltaTime;
-
-            // Tick
-            if (_totalStarsMoveTimer <= _totalStarsMoveDelay)
-            {
-                return;
-            }
-
-            _totalStarsMoveTimer = 0;
-
-            // Move the stars down and remove them if they cross the bottom line
-            for (var i = 0; i < _smallStars.Count; i++)
-            {
-                if (_smallStars[i].Y > _height)
-                {
-                    _smallStars.RemoveAt(i);
-                    continue;
-                }
-
-                _smallStars[i] += new Point2(0, 1);
-            }
-
-            for (var i = 0; i < _mediumStars.Count; i++)
-            {
-                if (_mediumStars[i].Y > _height)
-                {
-                    _mediumStars.RemoveAt(i);
-                    continue;
-                }
-
-                _mediumStars[i] += new Point2(0, 2);
-            }
-
-            for (var i = 0; i < _largeStars.Count; i++)
-            {
-                if (_largeStars[i].Y > _height)
-                {
-                    _largeStars.RemoveAt(i);
-                    continue;
-                }
-
-                _largeStars[i] += new Point2(0, 3);
-            }
-
-            // Adding more stars if their numbers falls bellow the maximum number
-            while (_smallStars.Count <= _maxSmallStars)
-            {
-                _smallStars.Add(new Point2(_randomX.Next() % _width + 1, 0));
-            }
-
-            while (_mediumStars.Count <= _maxMediumStars)
-            {
-                _mediumStars.Add(new Point2(_randomX.Next() % _width + 1, 0));
-            }
-
-            while (_largeStars.Count <= _maxLargeStars)
-            {
-                _largeStars.Add(new Point2(_randomX.Next() % _width + 1, 0));
-            }
+            return;
         }
 
-        public void Draw(RenderTarget target, RenderStates states)
+        _totalStarsMoveTimer = 0;
+
+        // Move the stars down and remove them if they cross the bottom line
+        for (var i = 0; i < _smallStars.Count; i++)
         {
-            _texture = new Texture(_image);
-
-            foreach (var star in _smallStars)
+            if (_smallStars[i].Y > _height)
             {
-                _texture.Update(_smallStarImage, (uint)star.X, (uint)star.Y);
+                _smallStars.RemoveAt(i);
+                continue;
             }
 
-            foreach (var star in _mediumStars)
-            {
-                _texture.Update(_mediumStarImage, (uint)star.X, (uint)star.Y);
-            }
-
-            foreach (var star in _largeStars)
-            {
-                _texture.Update(_largeStarImage, (uint)star.X, (uint)star.Y);
-            }
-
-            _sprite = new Sprite(_texture);
-
-            target.Draw(_sprite);
+            _smallStars[i] += new Point2(0, 1);
         }
+
+        for (var i = 0; i < _mediumStars.Count; i++)
+        {
+            if (_mediumStars[i].Y > _height)
+            {
+                _mediumStars.RemoveAt(i);
+                continue;
+            }
+
+            _mediumStars[i] += new Point2(0, 2);
+        }
+
+        for (var i = 0; i < _largeStars.Count; i++)
+        {
+            if (_largeStars[i].Y > _height)
+            {
+                _largeStars.RemoveAt(i);
+                continue;
+            }
+
+            _largeStars[i] += new Point2(0, 3);
+        }
+
+        // Adding more stars if their numbers falls bellow the maximum number
+        while (_smallStars.Count <= _maxSmallStars)
+        {
+            _smallStars.Add(new Point2(_randomX.Next() % _width + 1, 0));
+        }
+
+        while (_mediumStars.Count <= _maxMediumStars)
+        {
+            _mediumStars.Add(new Point2(_randomX.Next() % _width + 1, 0));
+        }
+
+        while (_largeStars.Count <= _maxLargeStars)
+        {
+            _largeStars.Add(new Point2(_randomX.Next() % _width + 1, 0));
+        }
+    }
+
+    public void Draw(RenderTarget target, RenderStates states)
+    {
+        _texture = new Texture(_image);
+
+        foreach (var star in _smallStars)
+        {
+            _texture.Update(_smallStarImage, (uint)star.X, (uint)star.Y);
+        }
+
+        foreach (var star in _mediumStars)
+        {
+            _texture.Update(_mediumStarImage, (uint)star.X, (uint)star.Y);
+        }
+
+        foreach (var star in _largeStars)
+        {
+            _texture.Update(_largeStarImage, (uint)star.X, (uint)star.Y);
+        }
+
+        _sprite = new Sprite(_texture);
+
+        target.Draw(_sprite);
+    }
 }

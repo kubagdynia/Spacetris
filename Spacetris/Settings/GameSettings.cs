@@ -223,9 +223,7 @@ public static class GameSettings
     }
 
     public static List<ScoreLine> GetScores()
-    {
-        return Scores;
-    }
+        => Scores;
 
     public static void CleanUp()
     {
@@ -236,7 +234,5 @@ public static class GameSettings
     }
 
     private static void MarkToSaveSettings()
-    {
-        _settingsShouldBeSaved = true;
-    }
+        => _settingsShouldBeSaved = true;
 }

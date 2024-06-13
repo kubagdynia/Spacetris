@@ -8,7 +8,7 @@ namespace Spacetris.GameStates.Worlds;
 
 public class World01 : BaseWorld
 {
-    private Starfield _starfield;
+    private IBackgroundEffects _starfield;
 
     public override int WorldColumns => 10;
     public override int WorldRows => 20;
@@ -53,7 +53,7 @@ public class World01 : BaseWorld
     {
         base.Update(target, deltaTime);
 
-        _starfield.UpdateStarfield(deltaTime);
+        _starfield.Update(deltaTime);
     }
 
     public override void DrawBackground(RenderWindow target, byte alpha = 255)

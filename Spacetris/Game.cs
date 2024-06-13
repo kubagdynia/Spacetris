@@ -67,7 +67,7 @@ public abstract class Game
 
         var totalTime = 0.0f;
 
-        // Main game loop
+        // Main game loop !!!
         while (Window.IsOpen)
         {
             Time = clock.Restart();
@@ -135,7 +135,5 @@ public abstract class Game
     protected abstract void JoystickMoved(object sender, JoystickMoveEventArgs arg);
 
     protected float GetFps()
-    {
-        return (1000000.0f / Time.AsMicroseconds());
-    }
+        => 1000000.0f / Time.AsMicroseconds();
 }
