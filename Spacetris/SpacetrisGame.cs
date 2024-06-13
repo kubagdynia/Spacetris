@@ -10,7 +10,7 @@ using Spacetris.Settings;
 
 namespace Spacetris;
 
-public class SpacetrisGame : Game
+public class SpacetrisGame() : Game(new Vector2u(960, 540), "Spacetris", Color.Black)
 {
     private SpacetrisGameState _gameState;
     
@@ -19,13 +19,7 @@ public class SpacetrisGame : Game
     private IWorld _world;
 
     private IMenu _menu;
-    
-    public SpacetrisGame()
-        : base(new Vector2u(960, 540), "Spacetris", Color.Black)
-    {
 
-    }
-    
     protected override void LoadContent()
         {
             GameSettings.Load();
@@ -135,9 +129,9 @@ public class SpacetrisGame : Game
             };
         }
 
-        private void MenuItemSelected(object sender, MenuItemType e)
+        private void MenuItemSelected(object sender, MenuItemType menuItemType)
         {
-            switch (e)
+            switch (menuItemType)
             {
                 case MenuItemType.NewGane:
                     _world.WorldState = WorldState.NewGame;
@@ -165,13 +159,13 @@ public class SpacetrisGame : Game
                 case MenuItemType.Back:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(e), e, null);
+                    throw new ArgumentOutOfRangeException(nameof(menuItemType), menuItemType, null);
             }
         }
 
-        private void PlayFieldStateChanged(object sender, WorldState e)
+        private void PlayFieldStateChanged(object sender, WorldState worldState)
         {
-            switch (e)
+            switch (worldState)
             {
                 case WorldState.Quit:
 #if DEBUG
@@ -196,8 +190,7 @@ public class SpacetrisGame : Game
                 case WorldState.GameOver:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(e), e, null);
+                    throw new ArgumentOutOfRangeException(nameof(worldState), worldState, null);
             }
         }
-    
 }
