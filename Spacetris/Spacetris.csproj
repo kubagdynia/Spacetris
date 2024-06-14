@@ -12,7 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ContentFiles Include="..\Content\**\*.*" />
+        <ContentFiles Include="..\Content\**\*.*">
+            <InProject>false</InProject>
+        </ContentFiles>
     </ItemGroup>
 
     <Target Name="CopyFiles" AfterTargets="AfterBuild">
