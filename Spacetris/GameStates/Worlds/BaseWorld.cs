@@ -184,16 +184,15 @@ public abstract class BaseWorld : BaseGameState, IWorld
             for (var column = 0; column < WorldColumns; column++)
             {
                 var blockNumber = World[row, column];
-                if (blockNumber != 0)
-                {
-                    ChangeBlockSpritePosition(
-                        column * SpriteBlockSize + DrawOffset.X + WorldDrawOffset.X,
-                        row * SpriteBlockSize + DrawOffset.Y + WorldDrawOffset.Y);
+                if (blockNumber == 0) continue;
+                
+                ChangeBlockSpritePosition(
+                    column * SpriteBlockSize + DrawOffset.X + WorldDrawOffset.X,
+                    row * SpriteBlockSize + DrawOffset.Y + WorldDrawOffset.Y);
 
-                    ChangeBlockSpriteTextureRect(blockNumber);
+                ChangeBlockSpriteTextureRect(blockNumber);
 
-                    target.Draw(BlockSprite);
-                }
+                target.Draw(BlockSprite);
             }
         }
         if (drawLandingShadow)
@@ -332,13 +331,14 @@ public abstract class BaseWorld : BaseGameState, IWorld
             DrawGui(target);
         }
 
-        if (WorldState == WorldState.GameOver)
+        switch (WorldState)
         {
-            DrawGameOver(target);
-        }
-        else if (WorldState is WorldState.NewGame or WorldState.Continue)
-        {
-            DrawStartCounter(target);
+            case WorldState.GameOver:
+                DrawGameOver(target);
+                break;
+            case WorldState.NewGame or WorldState.Continue:
+                DrawStartCounter(target);
+                break;
         }
 
         if (Joystick.IsConnected(0))
@@ -408,7 +408,7 @@ public abstract class BaseWorld : BaseGameState, IWorld
         var level = lines / 10;
 
         // Increase the speed of falling tetromino for each new level (800 milliseconds for 0 level)
-        var speed = (48f - (2f * level)) / 60f;
+        var speed = (48f - 2f * level) / 60f;
         GameState.TotalFallTickDelay = speed;
 
         return level;
@@ -634,51 +634,83 @@ public abstract class BaseWorld : BaseGameState, IWorld
 
         if (WorldState == WorldState.GameOver)
         {
-            if (e.Code == Keyboard.Key.Escape)
-            {
-                WorldState = WorldState.Quit;
-            }
-            else if (GameSettings.IsEnoughPointsForTopScores(GameState.Score))
-            {
-                if (AllowedKeyboardChars.ContainsKey(e.Code) && _userName.Length < 20)
-                {
-                    _userName += AllowedKeyboardChars[e.Code];
-                }
-                else switch (e.Code)
-                {
-                    case Keyboard.Key.Backspace when _userName.Length > 0:
-                        _userName = _userName.Remove(_userName.Length - 1);
-                        break;
-                    case Keyboard.Key.Enter:
-                        GameSettings.AddScore(new ScoreLine(_userName, GameState.Lines, GameState.Level, GameState.Score));
-                        WorldState = WorldState.Quit;
-                        break;
-                }
-            }
+            HandleGameOverKeyPress(e);
         }
         else if (e.Code == Keyboard.Key.Escape || (e.Code == Keyboard.Key.P && WorldState != WorldState.GameOver))
         {
-            _timer?.Dispose();
-            WorldState = WorldState.Pause;
+            PauseGame();
         }
-        else if ((_readyForRotate && e.Code is Keyboard.Key.Up or Keyboard.Key.W) ||
-            e.Code == Keyboard.Key.Left || e.Code == Keyboard.Key.A || e.Code == Keyboard.Key.Right || e.Code == Keyboard.Key.D ||
-            e.Code == Keyboard.Key.Space || (e.Code is Keyboard.Key.Down or Keyboard.Key.S && _isKeyDownEnabled))
+        else if (IsMovementKey(e.Code))
         {
             if (WorldState is WorldState.NewGame or WorldState.Continue)
             {
                 WorldState = WorldState.Playing;
             }
 
-            if (_readyForRotate && e.Code is Keyboard.Key.Up or Keyboard.Key.W)
+            HandleMovementKeyPress(target, e.Code);
+        }
+    }
+
+    private void HandleGameOverKeyPress(KeyEventArgs e)
+    {
+        if (e.Code == Keyboard.Key.Escape)
+        {
+            WorldState = WorldState.Quit;
+        }
+        else if (GameSettings.IsEnoughPointsForTopScores(GameState.Score))
+        {
+            HandleHighScoreKeyPress(e);
+        }
+    }
+
+    private void HandleHighScoreKeyPress(KeyEventArgs e)
+    {
+        if (AllowedKeyboardChars.ContainsKey(e.Code) && _userName.Length < 20)
+        {
+            _userName += AllowedKeyboardChars[e.Code];
+        }
+        else
+        {
+            switch (e.Code)
             {
-                _readyForRotate = false;
-                if (RotateTetromino())
-                {
-                    PlaySound(GameSoundMoveTetromino);
-                }
+                case Keyboard.Key.Backspace when _userName.Length > 0:
+                    _userName = _userName.Remove(_userName.Length - 1);
+                    break;
+                case Keyboard.Key.Enter:
+                    GameSettings.AddScore(new ScoreLine(_userName, GameState.Lines, GameState.Level, GameState.Score));
+                    WorldState = WorldState.Quit;
+                    break;
             }
-            else switch (e.Code)
+        }
+    }
+
+    private void PauseGame()
+    {
+        _timer?.Dispose();
+        WorldState = WorldState.Pause;
+    }
+
+    private bool IsMovementKey(Keyboard.Key key)
+    {
+        return (_readyForRotate && key is Keyboard.Key.Up or Keyboard.Key.W) ||
+               key == Keyboard.Key.Left || key == Keyboard.Key.A ||
+               key == Keyboard.Key.Right || key == Keyboard.Key.D ||
+               key == Keyboard.Key.Space || (key is Keyboard.Key.Down or Keyboard.Key.S && _isKeyDownEnabled);
+    }
+
+    private void HandleMovementKeyPress(RenderWindow target, Keyboard.Key key)
+    {
+        if (_readyForRotate && key is Keyboard.Key.Up or Keyboard.Key.W)
+        {
+            _readyForRotate = false;
+            if (RotateTetromino())
+            {
+                PlaySound(GameSoundMoveTetromino);
+            }
+        }
+        else
+        {
+            switch (key)
             {
                 case Keyboard.Key.Left or Keyboard.Key.A:
                     PlaySound(GameSoundMoveTetromino);
