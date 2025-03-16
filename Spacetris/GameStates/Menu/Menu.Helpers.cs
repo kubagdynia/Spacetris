@@ -7,14 +7,10 @@ namespace Spacetris.GameStates.Menu;
 public partial class Menu
 {
     private void AdjustVolume(int step)
-    {
-        _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), step);
-    }
+        => _selectedMenuItem.FunctionObject?.Invoke((bool)_selectedMenuItem.FunctionObject(null, null), step);
 
     private static Music GetMusic()
-    {
-        return AssetManager.Instance.Music.Get(AssetManagerItemName.Music01);
-    }
+        => AssetManager.Instance.Music.Get(AssetManagerItemName.Music01);
 
     private void RecalculateMenuItemsPosition(MenuItem[] items)
     {
